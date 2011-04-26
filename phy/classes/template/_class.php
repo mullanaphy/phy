@@ -781,24 +781,23 @@
 		public function footer() {
 			if(is_file(BASE_PATH.'phy/templates/'.Constant::CONFIG('site/template').'/footer.phtml')):
 				ob_start();
-				include 'phy/templates/'.Constant::CONFIG('site/template').'footer.phtml';
+				include 'phy/templates/'.Constant::CONFIG('site/template').'/footer.phtml';
 				$content = ob_get_contents();
 				ob_end_clean();
 				return $content;
 			else:
-				# <header> tag that holds all this info.
-				$header = self::$tag->header;
-				$header->attributes(array('id' => 'header'));
-
-				$header->append('[FOOTER0]');
-				return $header;
+				# <footer> tag that holds all this info.
+				$footer = self::$tag->header;
+				$footer->attributes(array('id' => 'footer'));
+				$footer->append('[FOOTER]');
+				return $footer;
 			endif;
 		}
 
 		public function header() {
 			if(is_file(BASE_PATH.'phy/templates/'.Constant::CONFIG('site/template').'/header.phtml')):
 				ob_start();
-				include 'phy/templates/'.Constant::CONFIG('site/template').'header.phtml';
+				include 'phy/templates/'.Constant::CONFIG('site/template').'/header.phtml';
 				$content = ob_get_contents();
 				ob_end_clean();
 				return $content;
