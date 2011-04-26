@@ -1,0 +1,138 @@
+<?php
+
+	class API_Container extends API_Abstract {
+		const AUTHOR = 'John Mullanaphy';
+		const CREATED = '2010-11-11';
+		const VERSION = '0.1.0';
+
+		public $tag = NULL;
+
+#####	# RESTful methods.
+
+		protected function api_get() {
+			if(isset($this->parameters['_url'])) return $this->run_url();
+			elseif(!isset($this->parameters['class'],$this->parameters['container'])) return array(
+					'status' => 400,
+					'response' => 'Missing information, please make sure you provide `class` and `container`. #'.__LINE__
+				);
+			$Class = 'Page_'.$this->parameters['class'];
+			$container = $this->parameters['container'];
+			if(!method_exists($Class,$container)) return array(
+					'status' => 404,
+					'response' => 'Container was not found in the class provided. #'.__LINE__
+				);
+			try {
+				$this->tag = Markup::tag();
+				$Container = $Class::$container($this->parameters);
+				$hash = isset($this->parameters['hash']) && $this->parameters['hash']?$this->parameters['hash']:NULL;
+				if(is_array($Container) && isset($Container['status'])):
+					if(isset($Container['content']) && md5($Container['content']) === $hash):
+						return array('status' => 204);
+					else:
+						$Container['hash'] = isset($Container['content'])?md5($Container['content']):'';
+						return array(
+							'status' => 200,
+							'response' => $Container
+						);
+					endif;
+				else:
+					if($Container === NULL) $return = NULL;
+					elseif(isset($this->parameters['values'])) $return = $Container->values();
+					else $return = array('content' => (string)$Container);
+					if($return === NULL || md5($Container) === $hash):
+						return array('status' => 204);
+					else:
+						$return['hash'] = md5($return['content']);
+						return array(
+							'status' => 200,
+							'response' => $return
+						);
+					endif;
+				endif;
+			}
+			catch(Exception $e) {
+				return array(
+					'status' => 404,
+					'response' => 'Container was not found in the class provided. #'.__LINE__
+				);
+			}
+		}
+
+		protected function api_url() {
+			if(!isset($this->parameters['_url']) )return array(
+					'status' => 400,
+					'response' => 'Missing information, please make sure you provide a `page`. #'.__LINE__
+				);
+			if(strpos($this->parameters['_url'],'?') !== false):
+				$query_string = explode('?',$this->parameters['_url']);
+				$values = explode('/',trim($query_string[0],'/'));
+				parse_str($query_string[1],$query_string);
+				foreach($query_string as $key => $value) $this->parameters[$key] = $value;
+			else:
+				$values = explode('/',trim($this->parameters['_url'],'/'));
+			endif;
+			$this->parameters['parameters'] = $values;
+			if(count($values) > 2):
+				$this->parameters['page'] = array_shift($values);
+				$this->parameters['mode'] = array_shift($values);
+				$this->parameters['id'] = array_shift($values);
+			elseif(count($values) === 2):
+				$this->parameters['page'] = array_shift($values);
+				$this->parameters['mode'] = array_shift($values);
+			elseif(count($values)):
+				$this->parameters['page'] = array_shift($values);
+			endif;
+			if(strpos($this->parameters['_url'],'?') !== false):
+				$query_string = explode('?',$this->parameters['_url']);
+				parse_str($query_string[1],$query_string);
+				foreach($query_string as $key => $value) $this->parameters[$key] = $value;
+			endif;
+			if(isset($this->parameters['page'])) $Class = $this->parameters['page'];
+			else $Class = array_shift($values);
+			$this->tag = new Markup_HTML5;
+			if(class_exists('Page_'.$Class,true)):
+				$Reflection = new ReflectionClass('Page_'.$Class);
+				if($Reflection->implementsInterface('interface_page_ajax')):
+					$Class = 'Page_'.ucfirst($Class);
+					$Container = $Class::ajax();
+				endif;
+			else:
+				$User = new User($Class);
+				if(!$User->deleted):
+					$this->parameters['user'] = $User;
+					$Container = Page_Stage::ajax();
+				else:
+					return array(
+						'status' => 404,
+						'response' => 'Page was not found. #'.__LINE__
+					);
+				endif;
+			endif;
+			$hash = isset($this->parameters['hash']) && $this->parameters['hash']?$this->parameters['hash']:NULL;
+			if(is_array($Container) && isset($Container['status'])):
+				if(isset($Container['content']) && md5($Container['content']) === $hash):
+					return array('status' => 202);
+				else:
+					$Container['response']['hash'] = isset($Container['response']['content'])?md5(is_array($Container['response']['content'])?join(',',$Container['response']['content']):$Container['response']['content']):'';
+					return array(
+						'status' => 200,
+						'response' => $Container['response']
+					);
+				endif;
+			else:
+				if($Container === NULL) $return = NULL;
+				elseif(isset($this->parameters['values'])) $return = $Container->values();
+				else $return = array('content' => (string)$Container);
+				if($return === NULL || md5($Container) === $hash):
+					return array('status' => 201);
+				else:
+					$return['hash'] = md5($return['content']);
+					return array(
+						'status' => 200,
+						'response' => $return
+					);
+				endif;
+			endif;
+		}
+
+	}
