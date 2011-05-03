@@ -1,13 +1,15 @@
 <?php
 
+	namespace PHY;
+
 	final class Cookie {
 
 		private function __construct() {
-
+			
 		}
 
 		public function __clone() {
-			trigger_error('Cannot clone the static class Cookie.',E_USER_ERROR);
+			\PHY\Debug::error('Cannot clone the static class Cookie.',E_USER_ERROR);
 		}
 
 		/**

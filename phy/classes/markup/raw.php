@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+
 	/**
 	 * Work with only whatever tags you want.
 	 *
@@ -7,14 +9,14 @@
 	 * @package Markup_Raw
 	 * @author John Mullanaphy
 	 */
-	class Markup_Raw extends Markup_Abstract {
+	class Raw extends \PHY\Markup\_Abstract {
 
 		public function __call($function,$parameters) {
 			$function = strtolower($function);
 			if(isset($parameters[1]['void']) && $parameters[1]['void']):
-				$this->element = new Markup_Element($function,((isset($parameters[0]))?$this->_attributes($function,$parameters[0]):NULL),true);
+				$this->element = new \PHY\Markup\Element($function,((isset($parameters[0]))?$this->_attributes($function,$parameters[0]):NULL),true);
 			else:
-				$this->element = new Markup_Element($function,((isset($parameters[1]))?$parameters[1]:NULL),false);
+				$this->element = new \PHY\Markup\Element($function,((isset($parameters[1]))?$parameters[1]:NULL),false);
 				if(isset($parameters[0])) $this->element->append($parameters[0]);
 			endif;
 			return $this->element;
@@ -22,7 +24,7 @@
 
 		public function __get($function) {
 			$function = strtolower($function);
-			$this->element = new Markup_Element($function,NULL,in_array($function,$this->voids),false);
+			$this->element = new \PHY\Markup\Element($function,NULL,in_array($function,$this->voids),false);
 			return $this->element;
 		}
 

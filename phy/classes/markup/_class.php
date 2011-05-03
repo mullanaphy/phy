@@ -1,4 +1,7 @@
 <?php
+
+	namespace PHY;
+
 	/**
 	 * Markup Factory so you only have to call $Markup = new Markup; or
 	 * $Markup = Markup::tag(); instead of needing to worry about what version
@@ -9,7 +12,7 @@
 	 * @final
 	 */
 	final class Markup {
-		const DEFAULT_LANGUAGE = 'Markup_HTML5';
+		const DEFAULT_LANGUAGE = '\PHY\Markup\HTML5';
 		static private $tag = NULL;
 
 		/**
@@ -27,6 +30,14 @@
 		 * Abstracts to self::$tag's __call.
 		 */
 		public function __call($function,$parameters) {
+			if(method_exists(self::$tag,$function)) return call_user_func_array(array(self::$tag,$function),$parameters);
+			else return self::$tag->__call($function,$parameters);
+		}
+
+		/**
+		 * Abstracts to self::$tag's __call.
+		 */
+		public static function __callStatic($function,$parameters) {
 			if(method_exists(self::$tag,$function)) return call_user_func_array(array(self::$tag,$function),$parameters);
 			else return self::$tag->__call($function,$parameters);
 		}
@@ -56,10 +67,10 @@
 				if(self::$tag === NULL):
 					self::$tag = new $default;
 				endif;
-			elseif(class_exists('markup_'.$language,true)):
-				$language = 'Markup_'.strtoupper($language);
+			elseif(class_exists('\PHY\Markup\\'.$language,true)):
+				$language = '\PHY\Markup\\'.strtoupper($language);
 				self::$tag = new $language;
-				if(!(self::$tag instanceof Markup_Abstract)):
+				if(!(self::$tag instanceof \PHY\Markup\_Abstract)):
 					self::$tag = new $default;
 				endif;
 			else:

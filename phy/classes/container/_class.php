@@ -1,9 +1,9 @@
 <?php
 
-	class Container extends Container_Abstract {
+	namespace PHY;
+
+	class Container extends \PHY\Container\_Abstract {
 
 		protected $holder = 'article';
 
 	}
-
-?>

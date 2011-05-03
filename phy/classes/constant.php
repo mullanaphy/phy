@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	final class Constant {
 
 		private function __construct() {
@@ -11,7 +13,7 @@
 		}
 
 		public function __call($method,$arguments) {
-			Debug::warning('Functions::'.$method.'() does not exist.');
+			\PHY\Debug::error('Functions::'.$method.'() does not exist.',E_USER_WARNING);
 		}
 
 		/**
@@ -32,7 +34,7 @@
 				if(is_file(BASE_PATH.'phy/config/'.$config.'.ini')):
 					$configs[$config] = parse_ini_file(BASE_PATH.'phy/config/'.$config.'.ini');
 				else:
-					Debug::warning('Config "'.$config.'" was not found.');
+					\PHY\Debug::warning('Config "'.$config.'" was not found.',E_USER_WARNING);
 					return;
 				endif;
 			endif;

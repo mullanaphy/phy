@@ -1,6 +1,8 @@
 <?php
 
-	abstract class Container_Abstract {
+	namespace PHY\Container;
+
+	abstract class _Abstract {
 
 		protected $attributes = array(),
 		$container = array(
@@ -24,8 +26,13 @@
 		static protected $ITEMS = array('aside','dialog','div','dl','figure','fieldset','form','h1','h2','h3','h4','h5','h6','iframe','li','noscript','ol','p','script','table','ul');
 		public $tag = NULL;
 
-#####	# Magic methods.
-
+		/**
+		 * Set an attribute depending on $function name to $parameters[0];
+		 * 
+		 * @param string $function
+		 * @param array $parameters
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function __call($function,$parameters=NULL) {
 			if($function === 'class' && $parameters !== NULL):
 				if(isset($parameters[0]) && is_array($parameters[0])) $this->_class($parameters[0],isset($parameters[1])?!!$parameters[1]:true);
@@ -34,15 +41,23 @@
 			return $this;
 		}
 
-		# Define what HTML tags to use.
-
+		/**
+		 * Create a new Container object.
+		 * 
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function __construct($attributes=false) {
-			$this->tag = Markup::tag();
+			$this->tag = \PHY\Markup::tag();
 			if($attributes) $this->attributes = $attributes;
+			return $this;
 		}
 
-		# Set the default values via __invoke().
-
+		/**
+		 * Reinitiate the Container.
+		 * 
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function __invoke($attributes=false) {
 			$this->container = array(
 				'after' => array(),
@@ -61,34 +76,50 @@
 			return $this;
 		}
 
-		# Generate the tag when on the __toString method.
-
+		/**
+		 * Render and return this container.
+		 * 
+		 * @return string
+		 */
 		public function __toString() {
-			return (string)$this->get();
+			return (string)$this->render();
 		}
 
-#####	# Default get methods.
-		# Return the content.
-
+		/**
+		 * Get just the content of this container as a string.
+		 * 
+		 * @return string
+		 */
 		public function content() {
 			return join('',$this->container['content']);
 		}
 
-		# Say if the container is empty.
-
+		/**
+		 * Check to see if this Container is empty.
+		 * 
+		 * Good for working with iterations.
+		 * 
+		 * return bool;
+		 */
 		public function is_empty() {
 			return!count($this->container['content']);
 		}
 
-		# Return the JSON equivalent.
-
+		/**
+		 * Return a JSON string of this Container.
+		 * 
+		 * @return string
+		 */
 		public function json() {
 			return json_encode($this->values());
 		}
 
-		# Return the container.
-
-		public function get() {
+		/**
+		 * Render the container and return its Markup object.
+		 * 
+		 * @return \PHY\Markup\_Abstract 
+		 */
+		public function render() {
 			$holder = $this->holder;
 			$holder = $this->tag->$holder;
 
@@ -142,8 +173,11 @@
 			return $holder;
 		}
 
-		# Return array equivalent.
-
+		/**
+		 * Return an array of all the values for a Container.
+		 * 
+		 * @return array
+		 */
 		public function values() {
 			if($this->container['hide_if_zero'] && !count($this->container['content'])) return array();
 
@@ -177,8 +211,7 @@
 			if($this->container['header']):
 				$attributes = $this->_attributes($this->container['header']['attributes']);
 				$return['header'] = (string)$this->tag->p(
-						$this->container['header']['content'],
-						$attributes
+						$this->container['header']['content'],$attributes
 				);
 			endif;
 
@@ -202,16 +235,25 @@
 			return $return;
 		}
 
-#####	# Settings values.
-		# Add raw content after the content.
-
+		/**
+		 * Append raw conotent AFTER the Container body.
+		 * 
+		 * @param mixed $content
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function after($content=NULL) {
 			$this->container['after'][] = $content;
+			return $this;
 		}
 
-		# Add content to the end.
-
-		public function append($content=false,$attributes=NULL) {
+		/**
+		 * Append content to the Container body.
+		 * 
+		 * @param mixed $content
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
+		public function append($content=false,array $attributes=NULL) {
 			if(is_array($content)) $content = join('',$content);
 			if(!$content):
 				return false;
@@ -227,46 +269,71 @@
 			return $this;
 		}
 
-		# Sets attributes for the container.
-
-		public function attributes($attributes=false) {
-			$attributes = $this->_attributes($attributes);
-			foreach($attributes as $key => $value):
-				if($key === 'data' && is_array($value)) foreach($value as $k => $v) $this->container['attributes']['data-'.$k] = $v;
-				elseif($key === 'class') $this->_class($value);
-				else $this->container['attributes'][$key] = $value;
-			endforeach;
+		/**
+		 * Sets attributes for the Container.
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
+		public function attributes(array $attributes=NULL) {
+			if(is_array($attributes)):
+				foreach($attributes as $key => $value):
+					if($key === 'data' && is_array($value)) foreach($value as $k => $v) $this->container['attributes']['data-'.$k] = $v;
+					elseif($key === 'class') $this->_class($value);
+					else $this->container['attributes'][$key] = $value;
+				endforeach;
+			endif;
 			return $this;
 		}
 
-		# Add raw content before the content.
-
+		/**
+		 * Add raw content before the Container body.
+		 * 
+		 * @param mixed $content
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function before($content=NULL) {
 			$this->container['before'][] = $content;
+			return $this;
 		}
 
-		# Clear the container values.
-
+		/**
+		 * Clear the Container values.
+		 * 
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function clear() {
 			return $this->__invoke();
 		}
 
-		# Sets whether or not the container is to have an "important" class applied to it.
-
+		/**
+		 * Sets whether or not the container is to have an "error" class applied to it.
+		 * 
+		 * @param bool $error
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function error($error=true) {
 			$this->_class('error',$error);
 			return $this;
 		}
 
-		# Sets whether or not the container is to have an "important" class applied to it.
-
+		/**
+		 * Sets whether or not the container is to have an "important" class applied to it.
+		 * 
+		 * @param bool $float
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function float($float=true) {
 			$this->_class('float',$float);
 			return $this;
 		}
 
-		# Sets the footer (footer).
-
+		/**
+		 * Sets the Container footer.
+		 * 
+		 * @param type $footer
+		 * @param type $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function footer($footer=false,$attributes=false) {
 			if($footer):
 				$this->container['footer'] = array(
@@ -277,15 +344,29 @@
 			return $this;
 		}
 
-		# Sets whether or not the container is to have an "important" class applied to it.
-
+		/**
+		 * Set the type of H tag the Container's header should use.
+		 * 
+		 * Send it a number 1-6 or a H tag.
+		 * 
+		 * @param mixed $h1
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function h1($h1='h1') {
 			if(is_numeric($h1) && $h1 >= 1 && $h1 <= 6) $this->container['h1'] = 'h'.$h1;
 			else $this->container['h1'] = in_array($h1,array('h1','h2','h3','h4','h5','h6'))?$h1:'h2';
 			return $this;
 		}
 
-		public function heading($content=false,$tag='h3',$attributes=NULL) {
+		/**
+		 * Create a heading inside of the Container body.
+		 * 
+		 * @param mixed $content
+		 * @param string $tag If $tag is an array then $attributes = $tag;
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
+		public function heading($content=false,$tag='h3',array $attributes=NULL) {
 			if(is_array($content)) $content = join('',$content);
 			if(!$content):
 				return false;
@@ -306,9 +387,14 @@
 			return $this;
 		}
 
-		# Sets the header text (p).
-
-		public function header($header=false,$attributes=false) {
+		/**
+		 * Sets header content for the top right portion of a Container.
+		 * 
+		 * @param mixed $header
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
+		public function header($header=false,array $attributes=NULL) {
 			if($header):
 				if(is_object($header) && in_array($header->tag,self::$ITEMS)) $this->container['header'] = $header;
 				else $this->container['header'] = array(
@@ -320,15 +406,12 @@
 			return $this;
 		}
 
-		# Sets the ID for the container.
-
-		public function id($id=false) {
-			$this->container['attributes']['id'] = $id;
-			return $this;
-		}
-
-		# Sets whether or not the container is to have an "important" class applied to it.
-
+		/**
+		 * Sets whether or not the container is to have an "important" class applied to it.
+		 * 
+		 * @param bool $important
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function important($important=true) {
 			$this->_class('important',$important);
 			return $this;
@@ -336,12 +419,31 @@
 
 		# Sets the info and displays it.
 
+		/**
+		 * Sets additional alert info that is collapsible.
+		 * 
+		 * @param mixed $info
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function info($info=NULL) {
 			if($info !== NULL) $this->container['info'] = $info;
 			return $this;
 		}
 
-		public function pagination($settings=false,$attributes=false) {
+		/**
+		 * Set pagination for this Container.
+		 * 
+		 * Settings needs these defined:
+		 *   'url' => '/page.php?page_id=[%i]' # string format [%i] for page_id.
+		 *   'total' => 12 # number of pages.
+		 *   'id' => 1 # current page id.
+		 *   'limit' => 25 # number of items per page.
+		 * 
+		 * @param array $settings
+		 * @param array $attributes
+		 * @return _Abstract 
+		 */
+		public function pagination(array $settings=array(),array $attributes=array()) {
 			if(isset($settings['url'],$settings['total']) && $settings['total'] > 1):
 				if(is_array($settings['url'])):
 					if(!count($settings['url'])):
@@ -363,77 +465,44 @@
 				if(isset($attributes['class'])) $attributes['class'] .= ' pagination';
 				else $attributes['class'] = 'pagination';
 				if(!isset($settings['limit'])) $settings['limit'] = 10;
-				if(isset($settings['id'])) $settings['page_id'] = $settings['id'];
-				if(!isset($settings['page_id']) || $settings['page_id'] < 1 || $settings['page_id'] > $settings['total']) $settings['page_id'] = 1;
+				if(!isset($settings['id']) || $settings['id'] < 1 || $settings['id'] > $settings['total']) $settings['id'] = 1;
 				$pages = $this->tag->ul;
 
-				$tens = floor($settings['page_id'] / 10) * 10;
+				$tens = floor($settings['id'] / 10) * 10;
 
 				foreach(range($tens - 30,$tens,10) as $i):
 					if($i <= 0) continue;
 					elseif($i >= $tens) break;
 					$pages->append(
-						$this->tag->li(
-							($i != $settings['page_id'])?$this->tag->url(
-									$i,
-									str_replace('[%i]',$i,$settings['url']),
-									isset($settings['attributes'])?$settings['attributes']:NULL
-								):$this->tag->strong($i)
-						)
+						$this->tag->li($i != $settings['id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
 					);
 				endforeach;
-				foreach(range($settings['page_id'] - 4,$settings['page_id'] + 4) as $i):
+				foreach(range($settings['id'] - 4,$settings['id'] + 4) as $i):
 					if($i <= 0) continue;
 					elseif($i > $settings['total']) break;
 					$pages->append(
-						$this->tag->li(
-							($i != $settings['page_id'])?$this->tag->url(
-									$i,
-									str_replace('[%i]',$i,$settings['url']),
-									isset($settings['attributes'])?$settings['attributes']:NULL
-								):$this->tag->strong($i)
-						)
+						$this->tag->li($i != $settings['page_id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
 					);
 				endforeach;
 				foreach(range($tens,$tens + 30,10) as $i):
 					if($i <= $tens) continue;
 					elseif($i > $settings['total']) break;
 					$pages->append(
-						$this->tag->li(
-							($i != $settings['page_id'])?$this->tag->url(
-									$i,
-									str_replace('[%i]',$i,$settings['url']),
-									isset($settings['attributes'])?$settings['attributes']:NULL
-								):$this->tag->strong($i)
-						)
+						$this->tag->li($i != $settings['id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
 					);
 				endforeach;
 				$pages->prepend(
-					$this->tag->li(
-						($settings['page_id'] > 1)?$this->tag->url(
-								'&laquo;',
-								str_replace('[%i]',($settings['page_id'] - 1),$settings['url']),
-								isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')
-							):$this->tag->span('&laquo;',array('class' => 'button disabled')),
-						NULL
-					)
+					$this->tag->li($settings['page_id'] > 1?$this->tag->url('&laquo;',str_replace('[%i]',($settings['id'] - 1),$settings['url']),isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')):$this->tag->span('&laquo;',array('class' => 'button disabled')),NULL)
 				);
 				$pages->append(
-					$this->tag->li(
-						($settings['page_id'] < $settings['total'])?$this->tag->url(
-								'&raquo;',
-								str_replace('[%i]',($settings['page_id'] + 1),$settings['url']),
-								isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')
-							):$this->tag->span('&raquo;',array('class' => 'button disabled')),
-						NULL
-					)
+					$this->tag->li($settings['id'] < $settings['total']?$this->tag->url('&raquo;',str_replace('[%i]',($settings['id'] + 1),$settings['url']),isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')):$this->tag->span('&raquo;',array('class' => 'button disabled')),NULL)
 				);
 				$this->container['footer'] = array(
 					'content' => array(
 						$this->tag->p(
 							array(
 								'Page ',
-								$this->tag->strong($settings['page_id']),
+								$this->tag->strong($settings['id']),
 								' of ',
 								$this->tag->strong(
 									($settings['total'] > 100)?'100+':$settings['total']
@@ -448,8 +517,13 @@
 			return $this;
 		}
 
-		# Add content to the beginning.
-
+		/**
+		 * Prepend content to the Container body.
+		 * 
+		 * @param mixed $content
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function prepend($content=false,$attributes=NULL) {
 			if(is_array($content)) $content = join('',$content);
 			if(!$content):
@@ -466,8 +540,12 @@
 			return $this;
 		}
 
-		# Add raw content to the end.
-
+		/**
+		 * Append raw content to the Container body.
+		 * 
+		 * @param mixed $content
+		 * @return \PHY\Container\_Abstract
+		 */
 		public function raw($content=false) {
 			if(is_array($content)) $content = join('',$content);
 			if(!$content) return false;
@@ -475,11 +553,15 @@
 			return $this;
 		}
 
-		# Set the title for the container.
-
-		public function title($title=false,$attributes=false) {
+		/**
+		 * Set the Container's title text.
+		 * 
+		 * @param mixed $title
+		 * @param array $attributes
+		 * @return \PHY\Container\_Abstract
+		 */
+		public function title($title=false,array $attributes=NULL) {
 			if($title):
-#				if(!isset($this->container['attributes']['id'])) $this->container['attributes']['id'] = $title;
 				$this->container['title'] = array(
 					'tag' => 'h3',
 					'content' => $title,
@@ -499,8 +581,17 @@
 			return $this;
 		}
 
-#####	# Protected methods.
-
+		/**
+		 * Internal cleaner for attributes.
+		 * 
+		 * If you send just a string then it will be set as the class
+		 * If you send a string with a : then it will set key:value.
+		 * 
+		 * @param mixed $attributes
+		 * @internal
+		 * @access protected
+		 * @return mixed
+		 */
 		protected function _attributes($attributes=NULL) {
 			if($attributes === NULL) return;
 			if(is_string($attributes)):
@@ -511,6 +602,14 @@
 			return $attributes;
 		}
 
+		/**
+		 * Internal setter for class names and whether we want to add new ones
+		 * or not.
+		 * 
+		 * @param string $classes
+		 * @param bool $add
+		 * @return bool
+		 */
 		protected function _class($classes=false,$add=true) {
 			if(!$classes) return false;
 			if(!is_array($classes)) $classes = array($classes);
@@ -534,6 +633,13 @@
 			return true;
 		}
 
+		/**
+		 * Render the content.
+		 * 
+		 * @internal
+		 * @access protected
+		 * @return \PHY\Markup\_Abstract
+		 */
 		protected function _content() {
 			$content = $this->content;
 			$content = $this->tag->$content;
@@ -547,6 +653,13 @@
 			return $content;
 		}
 
+		/**
+		 * Render the footer.
+		 * 
+		 * @internal
+		 * @access protected
+		 * @return \PHY\Markup\_Abstract
+		 */
 		protected function _footer() {
 			$footer = NULL;
 			if($this->container['footer']):
@@ -556,6 +669,13 @@
 			return $footer;
 		}
 
+		/**
+		 * Render the header.
+		 * 
+		 * @internal
+		 * @access protected
+		 * @return \PHY\Markup\_Abstract
+		 */
 		protected function _header() {
 			if(!$this->container['title'] && !$this->container['header']) return false;
 			# Add header if it exists.
@@ -563,8 +683,7 @@
 			$tag = in_array($this->container['h1'],array('h1','h2','h3','h4','h5','h6'))?$this->container['h1']:'h2';
 			if($this->container['title']) $header->append(
 					$this->tag->$tag(
-						$this->container['title']['content'],
-						$this->container['title']['attributes']
+						$this->container['title']['content'],$this->container['title']['attributes']
 					)
 				);
 
@@ -576,8 +695,7 @@
 					$attributes = $this->_attributes($this->container['header']['attributes']);
 					$header->append(
 						$this->tag->p(
-							$this->container['header']['content'],
-							$attributes
+							$this->container['header']['content'],$attributes
 						)
 					);
 				endif;
@@ -586,5 +704,3 @@
 		}
 
 	}
-
-?>

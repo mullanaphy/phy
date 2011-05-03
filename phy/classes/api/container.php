@@ -1,13 +1,13 @@
 <?php
 
-	class API_Container extends API_Abstract {
+	namespace PHY\API;
+
+	class Container extends \PHY\API\_Abstract {
 		const AUTHOR = 'John Mullanaphy';
 		const CREATED = '2010-11-11';
 		const VERSION = '0.1.0';
 
 		public $tag = NULL;
-
-#####	# RESTful methods.
 
 		protected function api_get() {
 			if(isset($this->parameters['_url'])) return $this->run_url();
@@ -15,14 +15,14 @@
 					'status' => 400,
 					'response' => 'Missing information, please make sure you provide `class` and `container`. #'.__LINE__
 				);
-			$Class = 'Page_'.$this->parameters['class'];
+			$Class = '\PHY\Page\\'.$this->parameters['class'];
 			$container = $this->parameters['container'];
 			if(!method_exists($Class,$container)) return array(
 					'status' => 404,
 					'response' => 'Container was not found in the class provided. #'.__LINE__
 				);
 			try {
-				$this->tag = Markup::tag();
+				$this->tag = \PHY\Markup::tag();
 				$Container = $Class::$container($this->parameters);
 				$hash = isset($this->parameters['hash']) && $this->parameters['hash']?$this->parameters['hash']:NULL;
 				if(is_array($Container) && isset($Container['status'])):
@@ -59,7 +59,7 @@
 		}
 
 		protected function api_url() {
-			if(!isset($this->parameters['_url']) )return array(
+			if(!isset($this->parameters['_url'])) return array(
 					'status' => 400,
 					'response' => 'Missing information, please make sure you provide a `page`. #'.__LINE__
 				);
@@ -89,23 +89,13 @@
 			endif;
 			if(isset($this->parameters['page'])) $Class = $this->parameters['page'];
 			else $Class = array_shift($values);
-			$this->tag = new Markup_HTML5;
-			if(class_exists('Page_'.$Class,true)):
-				$Reflection = new ReflectionClass('Page_'.$Class);
-				if($Reflection->implementsInterface('interface_page_ajax')):
-					$Class = 'Page_'.ucfirst($Class);
+			$this->tag = PHY\Markup::tag();
+			$Class = str_replace('/','\\',$Class);
+			if(class_exists('\PHY\Page\\'.$Class,true)):
+				$Reflection = new \ReflectionClass('\PHY\Page\\'.$Class);
+				if($Reflection->implementsInterface('\PHY\Interfaces\Page\Ajax')):
+					$Class = '\PHY\Page\\'.ucfirst($Class);
 					$Container = $Class::ajax();
-				endif;
-			else:
-				$User = new User($Class);
-				if(!$User->deleted):
-					$this->parameters['user'] = $User;
-					$Container = Page_Stage::ajax();
-				else:
-					return array(
-						'status' => 404,
-						'response' => 'Page was not found. #'.__LINE__
-					);
 				endif;
 			endif;
 			$hash = isset($this->parameters['hash']) && $this->parameters['hash']?$this->parameters['hash']:NULL;

@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+	
 	/**
 	 * Debugger class.
 	 *
@@ -108,11 +110,12 @@
 		 * @param bool $fatal If true Warning will run: exit;
 		 * @return <type>
 		 */
-		static public function warning($error,$fatal=false) {
+		static public function error($error,$fatal=false) {
 			if(!DEBUGGER) return;
 			$debug = debug_backtrace();
 			if(self::$_throw):
-				throw new Exception($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])).' ON LINE #'.((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']));
+				if($fatal) throw new \PHY\Exception\Severe($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])).' ON LINE #'.((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']));
+				else throw new \PHY\Exception\Warning($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])).' ON LINE #'.((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']));
 			else:
 				echo '<pre style="background:#fee;border:solid 1px #fcc;line-height:130%;margin:5px;font:12px \'courier new\';padding:5px;text-align:left;color:#f00;">',
 				'<h2 style="border-bottom:solid 2px #fcc;color:#f00;font:bold 16px \'courier new\';margin:0 0 5px;padding:0;">WARNING #',++self::$_count,': "',str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])),'" on line "',((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']),'"</h2>',

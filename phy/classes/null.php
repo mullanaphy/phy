@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * NULL everywhere! Used for references that need to be NULL.
 	 * 
@@ -17,7 +19,7 @@
 		}
 
 		public function __construct() {
-			Debug::warning('You are working with a deleted Object, so a NULL is being returned.');
+			PHY\Debug::warning('You are working with a deleted Object, so a NULL is being returned.');
 		}
 
 		public function __get($key) {

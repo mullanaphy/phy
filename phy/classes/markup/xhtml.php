@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+
 	/**
 	 * Work with only XHTML 1.0 Transition tags and attributes.
 	 *
@@ -7,7 +9,7 @@
 	 * @package Markup_XHTML
 	 * @author John Mullanaphy
 	 */
-	class Markup_XHTML extends Markup_Abstract {
+	class XHTML extends \PHY\Markup\_Abstract {
 
 		public $DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
 		$OPENER = '<html lang="en" xml:lang="en">',

@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+	
 	/**
 	 * Work with only HTML5 tags and attributes.
 	 *
@@ -7,7 +9,7 @@
 	 * @package Markup_HTML5
 	 * @author John Mullanaphy
 	 */
-	class Markup_HTML5 extends Markup_Abstract {
+	class HTML5 extends \PHY\Markup\_Abstract {
 
 		public $DOCTYPE = '<!DOCTYPE html>',
 		$OPENER = '<html lang="en">',

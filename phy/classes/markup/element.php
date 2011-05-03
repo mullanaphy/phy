@@ -1,4 +1,7 @@
 <?php
+
+	namespace PHY\Markup;
+
 	/**
 	 * The actual Markup element object. This is where the magic happens.
 	 *
@@ -8,7 +11,7 @@
 	 * @final
 	 * @internal
 	 */
-	final class Markup_Element {
+	final class Element {
 
 		private static $ELEMENTS = 0,
 		$STORE = array('h1','h2','h3','h4','h5','h6','strong','p'),
@@ -57,8 +60,8 @@
 		 */
 		public function __toString() {
 			if(in_array($this->tag,self::$STORE)):
-				if(self::$HEAP === NULL) self::$HEAP = new Markup_Heap;
-				$row = new stdClass;
+				if(self::$HEAP === NULL) self::$HEAP = new \PHY\Markup\Heap;
+				$row = new \stdClass;
 				$row->content = strip_tags(join('',$this->content));
 				$row->tag = $this->tag;
 				$row->rank = array_search($this->tag,self::$STORE);

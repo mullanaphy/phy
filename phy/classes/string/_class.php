@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+	
 	/**
 	 * Different static methods for dealing with String output.
 	 *

@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * Run headers.
 	 *

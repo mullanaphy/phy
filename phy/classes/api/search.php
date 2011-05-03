@@ -1,6 +1,8 @@
 <?php
 
-	class API_Search extends API_Abstract {
+	namespace PHY\API;
+
+	class Search extends \PHY\API\_Abstract {
 		const AUTHOR = 'John Mullanaphy';
 		const CREATED = '2010-09-30';
 		const VERSION = '0.1.0';
@@ -21,67 +23,24 @@
 					);
 
 				self::insert($this->parameters['q'],'header');
-				$tag = new Markup_HTML5;
-				$Search = new Sphinx;
+				$tag = new \PHY\Markup;
+				$Search = new \PHY\Sphinx;
 				$Search->setLimits(0,self::LIMIT);
-				$results = $Search->query($this->parameters['q'],'users users_delta');
-				if($results['total_found']):
-					$User = new User;
-					foreach($results['matches'] as $user_id => $weights):
-						$User($user_id);
-						$this->results[] = $tag->url(
-								array(
-									$tag->image(
-										$User->icon(40),
-										$User->fullname
-									),
-									$tag->span($User->fullname),
-									$tag->small($User->bulletin)
-								),
-								$User->url,
-								array('title' => $User->fullname)
-						);
-					endforeach;
-					unset($User);
-				endif;
-
-				$results = $Search->query($this->parameters['q'],'media media_delta');
-				if($results['total_found']):
-					$Media = new Media;
-					foreach($results['matches'] as $media_id => $weights):
-						$Media($media_id);
-						$this->results[] = $tag->url(
-								array(
-									$tag->image(
-										$Media->icon(40),
-										$Media->title
-									),
-									$tag->span($Media->title),
-									$tag->small(str_replace(array("\r","\n"),'',$Media->description))
-								),
-								$Media->url,
-								array(
-									'class' => 'search',
-									'title' => $Media->title
-								)
-						);
-					endforeach;
-					unset($Media);
-				endif;
+				$this->results = $Search->query($this->parameters['q']);
 			endif;
 
-			if(!$this->results) $this->results[] = $tag->p(Language::translate('No results found.'));
+			if(!$this->results) $this->results[] = 'No results found.';
 
 			return array(
 				'status' => 200,
 				'url' => $this->url.'&q='.$this->parameters['q'],
-				'response' => array('content' => join('',$this->results))
+				'response' => array('content' => $this->results)
 			);
 		}
 
 		static public function insert($term='',$location='search') {
 			if($term):
-				/* Log it */
+			/* Log it */
 			endif;
 		}
 

@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+	
 	/**
 	 * Work with only HTML4 tags and attributes.
 	 *
@@ -7,7 +9,7 @@
 	 * @package Markup_HTML4
 	 * @author John Mullanaphy
 	 */
-	class Markup_HTML4 extends Markup_Abstract {
+	class HTML4 extends \PHY\Markup\_Abstract {
 
 		public $DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
 		$OPENER = '<html lang="en" xml:lang="en">',

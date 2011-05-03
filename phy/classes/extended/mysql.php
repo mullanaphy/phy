@@ -1,6 +1,8 @@
 <?php
 
-	class Extended_MySQL extends MySQLi {
+	namespace PHY\Extended;
+
+	class MySQL extends \MySQLi {
 
 		private static $COUNT = 0,
 		$DEBUG = false,
@@ -54,11 +56,11 @@
 			if(self::$DEBUG) $this->last();
 			$SQL = parent::prepare($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -93,11 +95,11 @@
 			if(self::$DEBUG) $this->last();
 			$SQL = parent::multi_query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -118,11 +120,11 @@
 			if(self::$DEBUG) $this->last();
 			parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -143,11 +145,11 @@
 			if(self::$DEBUG) $this->last();
 			parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -168,11 +170,11 @@
 			if(self::$DEBUG) $this->last();
 			$SQL = parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -193,11 +195,11 @@
 			if(self::$DEBUG) $this->last();
 			parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			else:
@@ -236,11 +238,11 @@
 			if(self::$DEBUG) $this->last();
 			$SQL = parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			endif;
@@ -262,19 +264,19 @@
 			if(self::$DEBUG) $this->last();
 			$SQL = parent::query($sql);
 			if($this->error):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					$this->error."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			elseif($SQL->num_rows > 1):
-				Debug::warning(
+				\PHY\Debug::error(
 					'<strong>Error:</from> '."\n".
 					'Your SQL returned '.$SQL->num_rows.' rows. Use select() and fetch_assoc() instead.'."\n".
 					'<strong>From:</from> '."\n".
-					$sql
+					$sql,E_USER_WARNING
 				);
 				return false;
 			endif;
@@ -320,10 +322,10 @@
 		 * @param bool $show WARNING: If set to true it will show on live.
 		 */
 		public function show($show=false) {
-			if((Constant::DOMAIN('live') && !IS_ADMIN) && $show !== true) return;
+			if((\PHY\Core::config('site/production') && !\PHY\Registry::get('user/session')->admin) && $show !== true) return;
 			$debug = debug_backtrace();
 			$i = 0;
-			echo '<pre style="background:#fee;border:solid 1px #fcc;color:#800;line-height:130%;margin:5px;font:bold 16px \'courier new\';padding:5px;text-align:left;">',
+			echo '<pre style="background:#fsee;border:solid 1px #fcc;color:#800;line-height:130%;margin:5px;font:bold 16px \'courier new\';padding:5px;text-align:left;">',
 			'SQL OUTPUT ACTIVATED: '.str_replace(BASE_PATH,'/',$debug[$i]['file']).'" on line "'.$debug[$i]['line'].'"',
 			'</pre>';
 			self::$DEBUG = array(microtime(true),memory_get_usage());

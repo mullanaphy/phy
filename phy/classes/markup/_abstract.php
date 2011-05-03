@@ -1,4 +1,7 @@
 <?php
+
+	namespace PHY\Markup;
+
 	/**
 	 * Abstract class that adds helper methods for various HTML tags.
 	 *
@@ -7,7 +10,7 @@
 	 * @author John Mullanaphy
 	 * @abstract
 	 */
-	abstract class Markup_Abstract {
+	abstract class _Abstract {
 
 		protected $element = NULL,
 		$events = array(),
@@ -26,9 +29,9 @@
 			$function = strtolower($function);
 			if(in_array($function,array_keys($this->tags))):
 				if(in_array($function,$this->voids)):
-					$this->element = new Markup_Element($function,((isset($parameters[0]))?$this->_attributes($function,$parameters[0]):NULL),true);
+					$this->element = new \PHY\Markup\Element($function,((isset($parameters[0]))?$this->_attributes($function,$parameters[0]):NULL),true);
 				else:
-					$this->element = new Markup_Element($function,((isset($parameters[1]))?$this->_attributes($function,$parameters[1]):NULL),false);
+					$this->element = new \PHY\Markup\Element($function,((isset($parameters[1]))?$this->_attributes($function,$parameters[1]):NULL),false);
 					if(isset($parameters[0])) $this->element->append($parameters[0]);
 				endif;
 				return $this->element;
@@ -148,7 +151,7 @@
 			$attributes = $this->_attributes('button',$attributes);
 			if(isset($attributes['class'])) $attributes['class'] = 'button red '.$attributes['class'];
 			else $attributes['class'] = 'button red';
-			$button = new Markup_Element('button',$attributes,true);
+			$button = new \PHY\Markup\Element('button',$attributes,true);
 			$button->append($value);
 			return $button;
 		}
@@ -167,9 +170,9 @@
 			$attributes['name'] = $name;
 			$attributes['type'] = 'checkbox';
 			if(!isset($attributes['value'])) $attributes['value'] = 1;
-			if(!isset($attributes['id'])) $attributes['id'] = 'checkbox_'.String::random(8);
-			$tag = new Markup_Element('label',array('class' => 'checkbox','for' => $attributes['id']));
-			$tag->append(new Markup_Element('input',$attributes,true));
+			if(!isset($attributes['id'])) $attributes['id'] = 'checkbox_'.PHY\String::random(8);
+			$tag = new \PHY\Markup\Element('label',array('class' => 'checkbox','for' => $attributes['id']));
+			$tag->append(new \PHY\Markup\Element('input',$attributes,true));
 			$tag->append($label);
 			return $tag;
 		}
@@ -185,8 +188,8 @@
 		public function definition($term=NULL,$definition=NULL,$attributes=NULL) {
 			if($term === NULL || $definition === NULL) return;
 			$attributes = $this->_attributes('dl',$attributes);
-			$dl = new Markup_Element('dl',$attributes);
-			$dt = new Markup_Element('dt');
+			$dl = new \PHY\Markup\Element('dl',$attributes);
+			$dt = new \PHY\Markup\Element('dt');
 			$dt->append($term);
 			$dl->append($dt);
 			if(!is_array($definition)) $definition = array($definition);
@@ -200,7 +203,7 @@
 				else:
 					$dd_attributes = NULL;
 				endif;
-				$dd = new Markup_Element('dd',$dd_attributes);
+				$dd = new \PHY\Markup\Element('dd',$dd_attributes);
 				$dd->append($item);
 				$dl->append($dd);
 			endforeach;
@@ -238,7 +241,7 @@
 				default:
 					$attributes['value'] = $value;
 			endswitch;
-			$input = new Markup_Element('input',$attributes,true);
+			$input = new \PHY\Markup\Element('input',$attributes,true);
 			return $input;
 		}
 
@@ -256,7 +259,7 @@
 			if($title !== NULL) $attributes['alt'] = $title;
 			$attributes['src'] = $src;
 			if(!isset($attributes['alt'])) $attributes['alt'] = is_string($src)?$src:NULL;
-			$img = new Markup_Element('img',$attributes,true);
+			$img = new \PHY\Markup\Element('img',$attributes,true);
 			return $img;
 		}
 
@@ -271,7 +274,7 @@
 			if($content === NULL) return;
 			elseif(!is_array($content)) $content = array($content);
 			$attributes = $this->_attributes('ol',$attributes);
-			$ol = new Markup_Element('ol',$attributes);
+			$ol = new \PHY\Markup\Element('ol',$attributes);
 			$i = 0;
 			foreach($content as $item):
 				if(!$item):
@@ -285,7 +288,7 @@
 				else:
 					$li_attributes = NULL;
 				endif;
-				$li = new Markup_Element('li',$li_attributes);
+				$li = new \PHY\Markup\Element('li',$li_attributes);
 				$li->append($item);
 				$ol->append($li);
 				++$i;
@@ -305,7 +308,7 @@
 			$attributes = $this->_attributes('input',$attributes);
 			$attributes['type'] = 'password';
 			$attributes['name'] = $name;
-			return new Markup_Element('input',$attributes,true);
+			return new \PHY\Markup\Element('input',$attributes,true);
 		}
 
 		/**
@@ -340,14 +343,14 @@
 					else $value = $key;
 					if(!isset($attributes_input['value'])) $attributes_input['value'] = $key;
 					$attributes['for'] = $attributes_input['id'];
-					$label = new Markup_Element('label',$attributes);
-					$label->append(new Markup_Element('input',$attributes_input));
+					$label = new \PHY\Markup\Element('label',$attributes);
+					$label->append(new \PHY\Markup\Element('input',$attributes_input));
 					$label->append($value);
 				else:
 					$attributes['for'] = $id.'_'.$key;
-					$label = new Markup_Element('label',$attributes);
+					$label = new \PHY\Markup\Element('label',$attributes);
 					$label->append(
-						new Markup_Element(
+						new \PHY\Markup\Element(
 							'input',
 							(
 							($key == $checked)?array(
@@ -387,7 +390,7 @@
 			$attributes['value'] = $value;
 			if(isset($attributes['class'])) $attributes['class'] = 'reset '.$attributes['class'];
 			else $attributes['class'] = 'reset';
-			return new Markup_Element('input',$attributes,true);
+			return new \PHY\Markup\Element('input',$attributes,true);
 		}
 
 		/**
@@ -411,33 +414,33 @@
 				if(!isset($attributes['name'])) $attributes['name'] = $name;
 				$selected = false;
 			endif;
-			$select = new Markup_Element('select',$this->_attributes('select',$attributes));
+			$select = new \PHY\Markup\Element('select',$this->_attributes('select',$attributes));
 			foreach($values as $key => $value):
 				if(is_array($value) && isset($value['content'])):
 					if(is_array($value['content'])):
-						$optgroup = new Markup_Element('optgroup',array());
+						$optgroup = new \PHY\Markup\Element('optgroup',array());
 						foreach($value['content'] as $k => $v):
-							$option = new Markup_Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => ((isset($v['value']))?$v['value']:$v['content'])):array('value' => ((isset($v['value']))?$v['value']:$v['content']))));
+							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => ((isset($v['value']))?$v['value']:$v['content'])):array('value' => ((isset($v['value']))?$v['value']:$v['content']))));
 							$option->append($v['content']);
 							$optgroup->append($option);
 						endforeach;
 						$select->append($optgroup);
 					else:
-						$option = new Markup_Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => ((isset($value['value']))?$value['value']:$value['content'])):array('value' => ((isset($value['value']))?$value['value']:$value['content']))));
+						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => ((isset($value['value']))?$value['value']:$value['content'])):array('value' => ((isset($value['value']))?$value['value']:$value['content']))));
 						$option->append($value);
 						$select->append($option);
 					endif;
 				else:
 					if(is_array($value)):
-						$optgroup = new Markup_Element('optgroup',array());
+						$optgroup = new \PHY\Markup\Element('optgroup',array());
 						foreach($value as $k => $v):
-							$option = new Markup_Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => $v):array('value' => $v)));
+							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => $v):array('value' => $v)));
 							$option->append($v);
 							$optgroup->append($option);
 						endforeach;
 						$select->append($optgroup);
 					else:
-						$option = new Markup_Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => $key):array('value' => $key)));
+						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => $key):array('value' => $key)));
 						$option->append($value);
 						$select->append($option);
 					endif;
@@ -469,7 +472,7 @@
 			$attributes['value'] = $value;
 			if(isset($attributes['class'])) $attributes['class'] = 'submit button '.$attributes['class'];
 			else $attributes['class'] = 'submit button';
-			return new Markup_Element('input',$attributes,true);
+			return new \PHY\Markup\Element('input',$attributes,true);
 		}
 
 		/**
@@ -496,11 +499,11 @@
 			if($size <= 1):
 				if($value !== NULL) $attributes['value'] = htmlentities($value,ENT_QUOTES,'UTF-8',false);
 				$attributes['type'] = 'text';
-				$input = new Markup_Element('input',$attributes,true);
+				$input = new \PHY\Markup\Element('input',$attributes,true);
 			else:
 				if(!isset($attributes['cols'])) $attributes['cols'] = 15;
 				if(!isset($attributes['rows'])) $attributes['rows'] = $size;
-				$input = new Markup_Element('textarea',$attributes);
+				$input = new \PHY\Markup\Element('textarea',$attributes);
 				if($value !== NULL) $input->append(htmlentities($value,ENT_QUOTES,'UTF-8',false));
 			endif;
 			return $input;
@@ -535,8 +538,8 @@
 			endif;
 			$attributes = $this->_attributes($attributes);
 			$attributes['datetime'] = date('c',$date);
-			$time = new Markup_Element('time',$attributes,false);
-			$time->append($format !== NULL?date($format,$date):String::date($date));
+			$time = new \PHY\Markup\Element('time',$attributes,false);
+			$time->append($format !== NULL?date($format,$date):PHY\String::date($date));
 			return $time;
 		}
 
@@ -551,7 +554,7 @@
 			if($content === NULL) return;
 			elseif(!is_array($content)) $content = array($content);
 			$attributes = $this->_attributes('ul',$attributes);
-			$ul = new Markup_Element('ul',$attributes);
+			$ul = new \PHY\Markup\Element('ul',$attributes);
 			$i = 0;
 			foreach($content as $item):
 				if(!$item):
@@ -565,7 +568,7 @@
 				else:
 					$li_attributes = NULL;
 				endif;
-				$li = new Markup_Element('li',$li_attributes);
+				$li = new \PHY\Markup\Element('li',$li_attributes);
 				$li->append($item);
 				$ul->append($li);
 				++$i;
@@ -618,7 +621,7 @@
 			else:
 				$attributes['href'] = $link;
 			endif;
-			$a = new Markup_Element('a',$attributes);
+			$a = new \PHY\Markup\Element('a',$attributes);
 			$a->append($content);
 			return $a;
 		}
@@ -629,7 +632,7 @@
 		 * @return int
 		 */
 		static public function elements() {
-			return Markup_Element::elements();
+			return \PHY\Markup\Element::elements();
 		}
 
 		/**
@@ -638,7 +641,7 @@
 		 * @return array
 		 */
 		static public function important() {
-			return Markup_Element::important();
+			return \PHY\Markup\Element::important();
 		}
 
 	}

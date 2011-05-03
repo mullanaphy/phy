@@ -1,9 +1,11 @@
 <?php
 
+	namespace PHY\Singleton;
+
 	/**
 	 * Define your hosts inside phy/config.php
 	 */
-	final class Singleton_Memcache {
+	final class Memcache {
 
 		private static $_instance = NULL;
 
@@ -18,7 +20,7 @@
 		 * Singletons cannot be cloned.
 		 */
 		public function __clone() {
-			trigger_error('Singleton Classes cannot be cloned',E_USER_ERROR);
+			\PHY\Debug::error('Singleton Classes cannot be cloned.',E_USER_ERROR);
 		}
 
 		/**
@@ -28,8 +30,8 @@
 		 */
 		public function instance() {
 			if(self::$_instance === NULL):
-				self::$_instance = new Extended_Memcache;
-				$hosts = explode(';',Constant::CONFIG('memcache/host'));
+				self::$_instance = new \PHY\Extended\Memcache;
+				$hosts = explode(';',\PHY\Core::config('memcache/host'));
 				foreach($hosts as $host):
 					if(strpos($host,':') !== false):
 						$host = explode(':',$host);

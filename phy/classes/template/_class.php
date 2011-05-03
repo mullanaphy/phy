@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * @package Template
 	 * @category Frontend
@@ -8,7 +10,8 @@
 	 */
 	final class Template {
 
-		protected static $css = array(
+		private static $initiated = false,
+		$css = array(
 			'added' => array(),
 			'core' => array(),
 			'modules' => array(),
@@ -23,7 +26,7 @@
 		$keywords = array(
 			'added' => array(),
 			'invalid' => array('panda')
-		),
+			),
 		$meta = array(),
 		$rss = array(
 			'core' => array(),
@@ -40,30 +43,46 @@
 		$tag = NULL,
 		$title = '';
 
-#####	# Magic methods.
-		# Define what HTML tags to use.
-
+		/**
+		 * You can only initiate one Template object.
+		 * 
+		 * Will call self::init(); on initiation.
+		 */
 		public function __construct() {
+			if(self::$initiated) throw new \PHY\Exception\Template\Initiated;
+			else self::$initiated = true;
 			self::init();
 		}
 
+		/**
+		 * Will call self::generate(); on object destruction. 
+		 */
 		public function __destruct() {
-			self::flush();
+			self::generate();
 		}
 
-		# Generate the tag when on the __toString method.
-
+		/**
+		 * returns all the content.
+		 * 
+		 * @return string
+		 */
 		public function __toString() {
-			return (string)self::generate();
+			return self::head().self::body().self::$tag->CLOSER;
 		}
 
-
-		static public function flush() {
-			self::head();
-			self::body();
-			echo self::$tag->CLOSER;
+		/**
+		 * Echos out all generated HTML.
+		 */
+		static public function generate() {
+			echo self::head();
+			flush();
+			if(ob_list_handlers()) ob_flush();
+			echo self::body().self::$tag->CLOSER;
 		}
 
+		/**
+		 * Initiate the Template object.
+		 */
 		static public function init() {
 			# Meta data.
 			self::$meta = array(
@@ -85,19 +104,19 @@
 				),
 				'name_description' => array(
 					'name' => 'description',
-					'content' => Constant::CONFIG('site/description')
+					'content' => \PHY\Core::config('site/description')
 				),
 				'name_keywords' => array(
 					'name' => 'keywords',
-					'content' => Constant::CONFIG('site/keywords')
+					'content' => \PHY\Core::config('site/keywords')
 				),
 				'name_author' => array(
 					'name' => 'author',
-					'content' => Constant::CONFIG('site/name')
+					'content' => \PHY\Core::config('site/name')
 				),
 				'name_contact' => array(
 					'name' => 'contact',
-					'content' => Constant::CONFIG('site/email')
+					'content' => \PHY\Core::config('site/email')
 				),
 				'name_robots' => array(
 					'name' => 'robots',
@@ -109,17 +128,17 @@
 				),
 				'og:site_name' => array(
 					'property' => 'og:site_name',
-					'content' => Constant::CONFIG('site/name')
+					'content' => \PHY\Core::config('site/name')
 				)
 			);
 
 			# HTML Version to use.
 			switch(true):
 				case (Headers::ie6()):
-					self::$tag = new Markup('HTML4');
+					self::$tag = new \PHY\Markup('HTML4');
 					break;
 				case (Headers::bot()):
-					self::$tag = new Markup('HTML4');
+					self::$tag = new \PHY\Markup('HTML4');
 					break;
 				case (Headers::mobile()):
 					self::$meta[] = array(
@@ -127,7 +146,7 @@
 						'content' => 'user-scalable=no,width=device-width,minimum-scale=1.0,maximum-scale=1.0'
 					);
 				default:
-					self::$tag = new Markup;
+					self::$tag = new \PHY\Markup;
 			endswitch;
 
 			echo self::$tag->DOCTYPE,
@@ -136,8 +155,13 @@
 			if(ob_list_handlers()) ob_flush();
 		}
 
-#####	# Inserting content.
-
+		/**
+		 * Append content into the current Section/Column
+		 * 
+		 * @param mixed $content
+		 * @param array $attributes
+		 * @return bool 
+		 */
 		public function append($content=false,$attributes=NULL) {
 			if($content === false) return false;
 			if(is_numeric($attributes)) $attributes = array('style' => 'width:'.(($attributes >= 1)?(int)$attributes.'px':(int)($attributes * 100).'%'));
@@ -151,6 +175,14 @@
 			return true;
 		}
 
+		/**
+		 * Start a new column.
+		 * 
+		 * If you send an array of attributes, 'width' => '' will be appended to
+		 * style in the same way that sending just a decimal or integer would.
+		 * 
+		 * @param int|float|array $attributes
+		 */
 		public function column($attributes=NULL) {
 			if(is_numeric($attributes)) $attributes = array('style' => 'width:'.(($attributes >= 1)?(int)$attributes.'px':(int)($attributes * 100).'%'));
 			else $attributes = self::_attributes($attributes);
@@ -166,8 +198,16 @@
 			);
 		}
 
+		/**
+		 * Create a heading section.
+		 * 
+		 * @param mixed $content
+		 * @param string $tag Type of container tag to use.
+		 * @param array $attributes
+		 * @return bool 
+		 */
 		public function heading($content=NULL,$tag='h2',$attributes=NULL) {
-			if($content === NULL) return;
+			if($content === NULL) return false;
 			if(is_array($tag)):
 				$attributes = $tag;
 				$tag = 'h2';
@@ -179,26 +219,37 @@
 			else $attributes['class'] = 'heading';
 			if(!count(self::$sections)) self::section('normal');
 			elseif(!count(self::$sections[count(self::$sections) - 1]['columns'])) self::column();
-			self::$sections[count(self::$sections) - 1]['heading'] = self::$tag->$tag(
-					$content,
-					$attributes
-			);
+			self::$sections[count(self::$sections) - 1]['heading'] = self::$tag->$tag($content,$attributes);
+			return true;
 		}
 
+		/**
+		 * Prepend content into the current Section/Column
+		 * 
+		 * @param mixed $content
+		 * @param array $attributes
+		 * @return bool 
+		 */
 		public function prepend($content=false,$attributes=NULL) {
 			if($content === false) return false;
 			if(is_numeric($attributes)) $attributes = array('style' => 'width:'.(($attributes >= 1)?(int)$attributes.'px':(int)($attributes * 100).'%'));
 			else $attributes = self::_attributes($attributes);
 			array_unshift(
-				self::$sections[count(self::$sections) - 1]['columns'][count(self::$sections[count(self::$sections) - 1]['columns']) - 1]['content'],
-				array(
-					'attributes' => $attributes,
-					'content' => $content
+				self::$sections[count(self::$sections) - 1]['columns'][count(self::$sections[count(self::$sections) - 1]['columns']) - 1]['content'],array(
+				'attributes' => $attributes,
+				'content' => $content
 				)
 			);
 			return true;
 		}
 
+		/**
+		 * Add javascript to be run on its own.
+		 * 
+		 * @param type $content
+		 * @param type $attributes
+		 * @return array If no content is sent it returns back current scripts.
+		 */
 		public function script($content=NULL,$attributes=NULL) {
 			if($content === NULL) return self::$scripts;
 
@@ -210,6 +261,15 @@
 			self::$scripts[] = self::$tag->script($content,$attributes);
 		}
 
+		/**
+		 * Start a new section on our page.
+		 * 
+		 * IF $attributes is a bool then $expand = $attributes.
+		 * 
+		 * @param type $type Class name of our section.
+		 * @param array $attributes Attributes for the section or a bool.
+		 * @param bool $expand If the section should expand the whole viewport.
+		 */
 		public function section($type='normal',$attributes=NULL,$expand=NULL) {
 			if(is_bool($attributes)):
 				$expanded = !!$attributes;
@@ -228,8 +288,15 @@
 			);
 		}
 
-#####	# Settings values.
-
+		/**
+		 * Set|Get CSS.
+		 * 
+		 * If no parameters are set then this method will return all current
+		 * CSS files that have been set.
+		 * 
+		 * @param string,... $css
+		 * @return mixed
+		 */
 		static public function css($css=NULL) {
 			if($css === NULL) return array_merge(self::$css['added'],self::$css['modules']);
 			foreach(func_get_args() as $css):
@@ -248,11 +315,29 @@
 			return true;
 		}
 
+		/**
+		 * Set|Get meta description.
+		 * 
+		 * If called without a parameter then this will return the currently set
+		 * meta description.
+		 * 
+		 * @param string $description
+		 * @return mixed
+		 */
 		public function description($description=NULL) {
 			if($description === NULL) return self::$meta['name_description']['content'];
 			self::$meta['name_description']['content'] = $description;
 		}
 
+		/**
+		 * Set|Get CSS and JS files.
+		 * 
+		 * If no parameters are set then this method will return all current
+		 * files that have been set (CSS and JS).
+		 * 
+		 * @param string,... $file
+		 * @return mixed
+		 */
 		static public function files($files=NULL) {
 			if($files === NULL) return array_merge(self::$css['added'],self::$css['modules'],self::$js['added'],self::$js['modules']);
 			foreach(func_get_args() as $files):
@@ -271,11 +356,38 @@
 			return true;
 		}
 
+		/**
+		 * Turn options off.
+		 * 
+		 * Can hide:
+		 * 	'title'
+		 * 	'footer'
+		 * 	'header'
+		 * 	'theme'
+		 * 
+		 * If no parameters are set then it will return currently hidden.
+		 * 
+		 * @param $hide,... Option to hide.
+		 * @return mixed
+		 */
 		public function hide() {
-			if(!count(func_get_args())) return self::$show;
+			if(!count(func_get_args())):
+				$hidden = array();
+				foreach(self::$show as $option => $show) if(!$show) $hidden[] = $option;
+				return $hidden;
+			endif;
 			foreach(func_get_args() as $hide) if(isset(self::$show[$hide])) self::$show[$hide] = false;
 		}
 
+		/**
+		 * Set|Get JS.
+		 * 
+		 * If no parameters are set then this method will return all current
+		 * JS files that have been set.
+		 * 
+		 * @param string,... $js
+		 * @return mixed
+		 */
 		public function js($js=NULL) {
 			if($js === NULL) return array_merge(self::$js['added'],self::$js['modules']);
 			foreach(func_get_args() as $js):
@@ -286,16 +398,43 @@
 			return true;
 		}
 
+		/**
+		 * Set|Get meta keywords.
+		 * 
+		 * If called without a parameter then this will return the currently set
+		 * meta keyword.
+		 * 
+		 * @param string,... $keyword
+		 * @return mixed
+		 */
 		public function keywords() {
 			if(!count(func_get_args())) return self::$meta['name_keywords']['content'];
 			self::$meta['name_keywords']['content'] = join(', ',func_get_args());
 		}
 
-		public function meta($meta=NULL) {
-			if(is_array($meta)) self::$meta[] = $meta;
-			return self::$meta;
+		/**
+		 * Set|Get a meta tag.
+		 * 
+		 * If called without a parameter then this will return the currently set
+		 * meta tags.
+		 * 
+		 * @param array $attributes Attributes of the new meta tag.
+		 * @return mixed
+		 */
+		public function meta(array $attributes=NULL) {
+			if($attributes === NULL) return self::$meta;
+			if($attributes) self::$meta[] = $meta;
 		}
 
+		/**
+		 * Set|Get RSS.
+		 * 
+		 * If no parameters are set then this method will return all current
+		 * RSS files that have been set.
+		 * 
+		 * @param string,... $rss
+		 * @return mixed
+		 */
 		public function rss($rss=NULL) {
 			if($rss === NULL) return self::$rss['added'];
 			foreach(func_get_args() as $rss):
@@ -305,18 +444,48 @@
 			self::$rss['added'] = array_unique(self::$rss['added']);
 		}
 
+		/**
+		 * Turn options off.
+		 * 
+		 * Can show:
+		 * 	'title'
+		 * 	'footer'
+		 * 	'header'
+		 * 	'theme'
+		 * 
+		 * If no parameters are set then it will return currently shown.
+		 * 
+		 * @param $show,... Option to show.
+		 * @return mixed
+		 */
 		public function show() {
-			if(!count(func_get_args())) return self::$show;
+			if(!count(func_get_args())):
+				$shown = array();
+				foreach(self::$show as $option => $show) if($show) $shown[] = $option;
+				return $shown;
+			endif;
 			foreach(func_get_args() as $show) if(isset(self::$show[$show])) self::$show[$show] = false;
 		}
 
+		/**
+		 * Set|Get meta title.
+		 * 
+		 * If called without a parameter then this will return the currently set
+		 * meta title.
+		 * 
+		 * @param string $title
+		 * @return mixed
+		 */
 		public function title($title=false) {
 			if($title) self::$title = $title;
 			return self::$title;
 		}
 
-#####	# Generating.
-
+		/**
+		 * Return a Markup object containing all of our body content.
+		 * 
+		 * @return Markup_Abstract
+		 */
 		protected function body() {
 			$body = self::$tag->body;
 
@@ -352,13 +521,12 @@
 
 			# Process the footer.
 			if(self::$show['footer']) $body->append(self::footer());
-			if(!Constant::CONFIG('site/production')):
+			if(!\PHY\Core::config('site/production')):
 				foreach(self::$js['footer'] as $js) $body->append(
 						self::$tag->script(
-							NULL,
-							array(
-								'src' => (substr($js,0,4) === 'http'?$js:'/js/'.$js),
-								'type' => 'text/javascript'
+							NULL,array(
+							'src' => (substr($js,0,4) === 'http'?$js:'/js/'.$js),
+							'type' => 'text/javascript'
 							)
 						)
 					);
@@ -368,10 +536,9 @@
 					foreach(self::$js['footer'] as $js):
 						if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://') $body->append(
 								self::$tag->script(
-									NULL,
-									array(
-										'src' => $js,
-										'type' => 'text/javascript'
+									NULL,array(
+									'src' => $js,
+									'type' => 'text/javascript'
 									)
 								)
 							);
@@ -392,41 +559,45 @@
 					endif;
 					$body->append(
 						self::$tag->script(
-							NULL,
-							array(
-								'src' => '/scripts/cached/footer.'.md5(join('',self::$js['footer'])).'.js',
-								'type' => 'text/javascript'
+							NULL,array(
+							'src' => '/scripts/cached/footer.'.md5(join('',self::$js['footer'])).'.js',
+							'type' => 'text/javascript'
 							)
 						)
 					);
 				endif;
 				$body->append(
 					self::$tag->script(
-						'var gaJsHost=((\'https:\'==document.location.protocol)?\'https://ssl.\':\'http://www.\');document.write(unescape("%3Cscript src=\'"+gaJsHost+"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));',
-						array('type' => 'text/javascript')
+						'var gaJsHost=((\'https:\'==document.location.protocol)?\'https://ssl.\':\'http://www.\');document.write(unescape("%3Cscript src=\'"+gaJsHost+"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));',array('type' => 'text/javascript')
 					)
 				);
 				$body->append(
 					self::$tag->script(
-						'try{var pageTracker=_gat._getTracker(\'UA-2763315-2\');pageTracker._trackPageview();}catch(e){}',
-						array('type' => 'text/javascript')
+						'try{var pageTracker=_gat._getTracker(\'UA-2763315-2\');pageTracker._trackPageview();}catch(e){}',array('type' => 'text/javascript')
 					)
 				);
 			endif;
 			$body->append(
 				self::$tag->script(
-					'try{if(console)console.log(\'Generation: '.Debug::timer().'; Elements: '.Markup_HTML5::elements().'; Server: '.$_SERVER['SERVER_ADDR'].'\');}catch(e){};',
-					array('type' => 'text/javascript')
+					'try{if(console)console.log(\'Generation: '.Debug::timer().'; Elements: '.\PHY\Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'].'\');}catch(e){};',array('type' => 'text/javascript')
 				)
 			);
-			echo $body;
+			return $body;
 		}
 
-		protected function _files() {
+		/**
+		 * Internal function for generating all the files and merging if we are
+		 * on a production server.
+		 * 
+		 * @access private
+		 * @internal
+		 * @return mixed
+		 */
+		private function _files() {
 			$files = array();
 
 			# Devo and Beta servers. We will not combine files on these servers.
-			if(in_array(USER_BROWSER,array('ie','ie6')) || !Constant::CONFIG('site/production')):
+			if(in_array(USER_BROWSER,array('ie','ie6')) || !\PHY\Core::config('site/production')):
 				foreach(array_merge(self::$css['core'],self::$css['added'],self::$css['modules']) as $css) $files[] = self::$tag->link(
 							array(
 								'href' => '/css/'.$css,
@@ -449,10 +620,9 @@
 						);
 
 				foreach(array_merge(self::$js['core'],self::$js['added'],self::$js['modules']) as $js) $files[] = self::$tag->script(
-							NULL,
-							array(
-								'src' => (substr($js,0,4) === 'http'?$js:'/js/'.$js),
-								'type' => 'text/javascript'
+							NULL,array(
+							'src' => (substr($js,0,4) === 'http'?$js:'/js/'.$js),
+							'type' => 'text/javascript'
 							)
 					);
 
@@ -584,10 +754,9 @@
 					foreach(self::$js['core'] as $js):
 						if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
 							$files[] = self::$tag->script(
-									NULL,
-									array(
-										'src' => $js,
-										'type' => 'text/javascript'
+									NULL,array(
+									'src' => $js,
+									'type' => 'text/javascript'
 									)
 							);
 						elseif(is_file(BASE_PATH.'js/'.$js)):
@@ -603,18 +772,16 @@
 					endif;
 				else:
 					foreach(self::$js['core'] as $js) if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://') $files[] = self::$tag->script(
-									NULL,
-									array(
-										'src' => $js,
-										'type' => 'text/javascript'
+									NULL,array(
+									'src' => $js,
+									'type' => 'text/javascript'
 									)
 							);
 				endif;
 				$files[] = self::$tag->script(
-						NULL,
-						array(
-							'src' => '/js/cached/core.'.md5(join('',self::$js['core'])).'.js',
-							'type' => 'text/javascript'
+						NULL,array(
+						'src' => '/js/cached/core.'.md5(join('',self::$js['core'])).'.js',
+						'type' => 'text/javascript'
 						)
 				);
 
@@ -625,10 +792,9 @@
 						foreach(self::$js['added'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
 								$files[] = self::$tag->script(
-										NULL,
-										array(
-											'src' => $js,
-											'type' => 'text/javascript'
+										NULL,array(
+										'src' => $js,
+										'type' => 'text/javascript'
 										)
 								);
 							elseif(is_file(BASE_PATH.'js/'.$js)):
@@ -644,26 +810,23 @@
 						endif;
 					else:
 						foreach(self::$js['added'] as $js) if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://') $files[] = self::$tag->script(
-										NULL,
-										array(
-											'src' => $js,
-											'type' => 'text/javascript'
+										NULL,array(
+										'src' => $js,
+										'type' => 'text/javascript'
 										)
 								);
 					endif;
 					$files[] = self::$tag->script(
-							NULL,
-							array(
-								'src' => '/js/cached/hash.'.md5(join('',self::$js['added'])).'.js',
-								'type' => 'text/javascript'
+							NULL,array(
+							'src' => '/js/cached/hash.'.md5(join('',self::$js['added'])).'.js',
+							'type' => 'text/javascript'
 							)
 					);
 					if(Headers::ie6()):
 						$files[] = self::$tag->script(
-								NULL,
-								array(
-									'/js/pngfix.js',
-									'type' => 'text/javascript'
+								NULL,array(
+								'/js/pngfix.js',
+								'type' => 'text/javascript'
 								)
 						);
 					endif;
@@ -676,10 +839,9 @@
 						foreach(self::$js['modules'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
 								$files[] = self::$tag->script(
-										NULL,
-										array(
-											'src' => $js,
-											'type' => 'text/javascript'
+										NULL,array(
+										'src' => $js,
+										'type' => 'text/javascript'
 										)
 								);
 							elseif(is_file(BASE_PATH.'js/'.$js)):
@@ -695,18 +857,16 @@
 						endif;
 					else:
 						foreach(self::$js['modules'] as $js) if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://') $files[] = self::$tag->script(
-										NULL,
-										array(
-											'src' => $js,
-											'type' => 'text/javascript'
+										NULL,array(
+										'src' => $js,
+										'type' => 'text/javascript'
 										)
 								);
 					endif;
 					$files[] = self::$tag->script(
-							NULL,
-							array(
-								'src' => '/scripts/cached/modules.'.md5(join('',self::$js['modules'])).'.js',
-								'type' => 'text/javascript'
+							NULL,array(
+							'src' => '/scripts/cached/modules.'.md5(join('',self::$js['modules'])).'.js',
+							'type' => 'text/javascript'
 							)
 					);
 				endif;
@@ -731,6 +891,11 @@
 			return $files;
 		}
 
+		/**
+		 * Generate and return the HEAD tag of our Page.
+		 * 
+		 * @return Markup_Abstract
+		 */
 		public function head() {
 			$head = self::$tag->head;
 
@@ -738,7 +903,7 @@
 			$head->append(
 				self::$tag->title(
 					(
-					self::$show['title']?Constant::CONFIG('site/name').
+					self::$show['title']?\PHY\Core::config('site/name').
 						(
 						self::$title?' - ':NULL
 						):NULL
@@ -768,20 +933,23 @@
 			endforeach;
 			$head->append(self::_files());
 			self::script(
-					'if(window.location.hash.toString().match(\'!\')){var url=window.location.hash.toString().split(\'!\');window.location=url[1];}'.
-					'if(typeof $===\'undefined\')var $={};$.user={xsrf:\''.Cookie::get('xsrf_id').'\'};'
+				'if(window.location.hash.toString().match(\'!\')){var url=window.location.hash.toString().split(\'!\');window.location=url[1];}'.
+				'if(typeof $===\'undefined\')var $={};$.user={xsrf:\''.Cookie::get('xsrf_id').'\'};'
 			);
 			foreach(self::$scripts as $script) $head->append($script);
 
-			echo $head;
-			flush();
-			if(ob_list_handlers()) ob_flush();
+			return $head;
 		}
 
+		/**
+		 * Generate and return the FOOTER tag of our Page.
+		 * 
+		 * @return Markup_Abstract
+		 */
 		public function footer() {
-			if(is_file(BASE_PATH.'phy/templates/'.Constant::CONFIG('site/template').'/footer.phtml')):
+			if(is_file(BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/footer.phtml')):
 				ob_start();
-				include 'phy/templates/'.Constant::CONFIG('site/template').'/footer.phtml';
+				include BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/footer.phtml';
 				$content = ob_get_contents();
 				ob_end_clean();
 				return $content;
@@ -789,15 +957,20 @@
 				# <footer> tag that holds all this info.
 				$footer = self::$tag->header;
 				$footer->attributes(array('id' => 'footer'));
-				$footer->append('[FOOTER]');
+				$footer->append('<!-- No footer was defined -->');
 				return $footer;
 			endif;
 		}
 
+		/**
+		 * Generate the HEADER section of our BODY section.
+		 * 
+		 * @return string|Markup_Abstract
+		 */
 		public function header() {
-			if(is_file(BASE_PATH.'phy/templates/'.Constant::CONFIG('site/template').'/header.phtml')):
+			if(is_file(BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/header.phtml')):
 				ob_start();
-				include 'phy/templates/'.Constant::CONFIG('site/template').'/header.phtml';
+				include BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/header.phtml';
 				$content = ob_get_contents();
 				ob_end_clean();
 				return $content;
@@ -806,14 +979,22 @@
 				$header = self::$tag->header;
 				$header->attributes(array('id' => 'header'));
 
-				$header->append('[HEADER]');
+				$header->append('<!-- No header was defined -->');
 				return $header;
 			endif;
 		}
 
-#####	# Parsing.
-
-		protected function _attributes($attributes=NULL) {
+		/**
+		 * Internal cleaner for attributes.
+		 * 
+		 * If you send just a string then it will be set as the class
+		 * If you send a string with a : then it will set key:value.
+		 * 
+		 * @param mixed $attributes
+		 * @internal
+		 * @return mixed
+		 */
+		private function _attributes($attributes=NULL) {
 			if($attributes === NULL) return;
 			if(is_string($attributes)):
 				$split = explode(':',$attributes);
@@ -823,11 +1004,17 @@
 			return $attributes;
 		}
 
-		protected function _extract($limit=15) {
-			if(Markup_HTML5::elements() > 20 && Markup_HTML5::important()):
+		/**
+		 * Check our Markup heap for important tags. Return them if they exist.
+		 * 
+		 * @param type $limit
+		 * @return type 
+		 */
+		private function _extract($limit=15) {
+			if(\PHY\Markup::elements() > 20 && \PHY\Markup::important()):
 				$rows = array();
-				foreach(Markup_HTML5::important() as $row) $rows[] = $row->content;
-				Markup_HTML5::important()->rewind();
+				foreach(Markup::important() as $row) $rows[] = $row->content;
+				\PHY\Markup::important()->rewind();
 				$rows = array_unique($rows);
 				$parsed = array();
 				foreach($rows as $row) foreach(explode('{}',str_replace(array('&',',','.',':',';','?','!','- ',"'",'"'),'{}',$row)) as $item) if(strlen(trim($item)) > 2) $parsed[] = trim($item);
@@ -837,7 +1024,13 @@
 			endif;
 		}
 
-		protected function _meta() {
+		/**
+		 * Attempt to grab relevant meta tags on page generation. We use this if
+		 * meta details weren't set.
+		 * 
+		 * @return string
+		 */
+		private function _meta() {
 			self::$keywords['added'] = self::_extract(15);
 			$keywords = array();
 			foreach(self::$keywords['added'] as $words):
@@ -862,5 +1055,3 @@
 		}
 
 	}
-
-?>

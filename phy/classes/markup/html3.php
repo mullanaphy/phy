@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+	
 	/**
 	 * Work with only HTML3.2 tags and attributes. Works well for email flyers.
 	 *
@@ -7,7 +9,7 @@
 	 * @package Markup_HTML3
 	 * @author John Mullanaphy
 	 */
-	class Markup_HTML3 extends Markup_Abstract {
+	class HTML3 extends \PHY\Markup\_Abstract {
 
 		public $DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">',
 		$OPENER = '<html>',

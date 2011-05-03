@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * Validate various issues.
 	 *

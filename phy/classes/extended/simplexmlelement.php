@@ -1,4 +1,7 @@
 <?php
+
+	namespace PHY\Extended;
+
 	/**
 	 * Extended to add a cleaner namespace method.
 	 *
@@ -6,7 +9,7 @@
 	 * @package Extended_SimpleXMLElement
 	 * @author John Mullanaphy
 	 */
-	class Extended_SimpleXMLElement extends SimpleXMLElement {
+	class SimpleXMLElement extends \SimpleXMLElement {
 
 		private static $namespaces = array();
 

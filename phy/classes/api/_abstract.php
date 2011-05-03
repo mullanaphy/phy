@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\API;
+
 	/**
 	 * All API Classes must be able to handle RESTful methods.
 	 *
@@ -7,7 +9,7 @@
 	 * @package API_Abstract
 	 * @author John Mullanaphy
 	 */
-	abstract class API_Abstract extends ArrayObject {
+	abstract class _Abstract extends \ArrayObject {
 
 		private $_settings = array(
 			'MySQL' => NULL,
@@ -43,8 +45,8 @@
 		 * @param array $parameters STDIN or defined key => values.
 		 * @return API_Abstract
 		 */
-		final public function __construct(array $parameters=array()) {
-			$this->_settings['MySQL'] = Singleton_MySQL::instance();
+		final public function __construct(array $parameters=array(),$database=NULL) {
+			$this->_settings['MySQL'] = is_object($database)?:\PHY\Registry::get('MySQL/default');
 			$this->_parameters($parameters);
 			$this->_response = array(
 				'status' => 200,
@@ -121,7 +123,7 @@
 		 * @return mixed|false
 		 */
 		final public function error() {
-			return!API::success($this->_response['status'])?$this->_response['response']:false;
+			return !\PHY\API::success($this->_response['status'])?$this->_response['response']:false;
 		}
 
 		/**
@@ -162,9 +164,9 @@
 			$run = 'api_'.strtolower($method);
 
 			# Change the method if it makes sense to.
-			if(isset($this->parameters['method']) && !in_array(strtoupper($this->parameters['method']),API::methods())):
-				if(in_array(strtoupper($method),API::methods())) $this->parameters['method'] = strtoupper($method);
-				elseif(isset($_SERVER['REQUEST_METHOD']) && in_array(strtoupper($_SERVER['REQUEST_METHOD']),API::methods())) $this->parameters['method'] = strtoupper($_SERVER['REQUEST_METHOD']);
+			if(isset($this->parameters['method']) && !in_array(strtoupper($this->parameters['method']),\PHY\API::methods())):
+				if(in_array(strtoupper($method),\PHY\API::methods())) $this->parameters['method'] = strtoupper($method);
+				elseif(isset($_SERVER['REQUEST_METHOD']) && in_array(strtoupper($_SERVER['REQUEST_METHOD']),\PHY\API::methods())) $this->parameters['method'] = strtoupper($_SERVER['REQUEST_METHOD']);
 				else $this->parameters['method'] = 'GET';
 			endif;
 
@@ -242,10 +244,10 @@
 					$parameters['password'] = isset($parameters['token_id'])?$parameters['token_id']:$this->token_id;
 					unset($parameters['token_id']);
 				endif;
-				$this->_settings['credentials'] = API::token($parameters);
+				$this->_settings['credentials'] = \PHY\API::token($parameters);
 			endif;
 			$this->_settings['parameters'] = $parameters;
-			if(!isset($this->_settings['parameters']['method']) || !in_array($this->_settings['parameters']['method'],API::methods())) $this->_settings['parameters']['method'] = 'GET';
+			if(!isset($this->_settings['parameters']['method']) || !in_array($this->_settings['parameters']['method'],\PHY\API::methods())) $this->_settings['parameters']['method'] = 'GET';
 		}
 
 	}

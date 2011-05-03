@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\API;
+
 	/**
 	 * Logging API Based errors.
 	 *
@@ -8,7 +10,7 @@
 	 * @author John Mullanaphy
 	 * @final
 	 */
-	final class API_Error {
+	final class Error {
 
 		/**
 		 * Store an API based Error directly into a log.
@@ -19,10 +21,10 @@
 		 * @param array $parameters
 		 * @return string
 		 */
-		public function __construct($controller='',$method='',$response='',array $parameters) {
-			$MySQL = Singleton_MySQL::instance();
-			$credentials = API::token($parameters);
-			if(isset($parameters['password'])) $parameters['password'] = String::password($parameters['password']);
+		public function __construct($controller='',$method='',$response='',array $parameters,$database=NULL) {
+			$MySQL = is_object($database)?:\PHY\Registry::get('MySQL/default');
+			$credentials = \PHY\API::token($parameters);
+			if(isset($parameters['password'])) $parameters['password'] = \PHY\String::password($parameters['password']);
 			$columns = array(
 				'controller' => strtolower($MySQL->clean($controller)),
 				'status' => (int)$response['status'],

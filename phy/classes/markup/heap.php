@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\Markup;
+	
 	/**
 	 * Just a heap used for ranking element tag worth.
 	 *
@@ -9,7 +11,7 @@
 	 * @final
 	 * @internal
 	 */
-	final class Markup_Heap extends SplHeap {
+	final class Heap extends \SplHeap {
 
 		/**
 		 * Compares $row_1 to $row_2

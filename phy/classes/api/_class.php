@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * API Router.
 	 *
@@ -42,10 +44,11 @@
 			if(!is_string($controller) || !$controller) return;
 			$this->_controller = $controller;
 			$Class = $this->_controller;
-			if(class_exists('API_'.$Class,true)):
-				$Class = 'API_'.$Class;
+			$Class = str_replace('/','\\',$Class);
+			if(class_exists('\PHY\API\\'.$Class,true)):
+				$Class = '\PHY\API\\'.$Class;
 				$this->API = new $Class($parameters);
-				if($this->API instanceof API_Abstract):
+				if($this->API instanceof \PHY\API\_Abstract):
 					return true;
 				else:
 					$this->API = false;
@@ -56,8 +59,9 @@
 					return false;
 				endif;
 			else:
-				$Reflection = new ReflectionClass($Class);
-				if($Reflection->implementsInterface('API_Interface')):
+				$Class = '\PHY\\'.$Class;
+				$Reflection = new \ReflectionClass($Class);
+				if($Reflection->implementsInterface('PHY\API\_Interface')):
 					try {
 						$this->API = new $Class($parameters);
 					}
@@ -206,7 +210,7 @@
 		 * @param array $parameters
 		 * @return array
 		 */
-		static public function run($Class=NULL,$method='GET',array $parameters=array()) {
+		static public function single($Class=NULL,$method='GET',array $parameters=array()) {
 			if(!is_string($Class) || !$Class) return array(
 					'status' => 400,
 					'response' => 'Class not defined. #'.__LINE__
@@ -215,7 +219,7 @@
 				$parameters = $method;
 				$method = 'GET';
 			endif;
-			$API = new API($Class,$parameters);
+			$API = new \PHY\API($Class,$parameters);
 			return $API->run($method);
 		}
 

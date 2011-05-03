@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY\API;
+
 	/**
 	 * Any API desiring class must implement API_Interface.
 	 *
@@ -7,7 +9,7 @@
 	 * @category API
 	 * @author John Mullanaphy
 	 */
-	interface API_Interface {
+	interface _Interface {
 
 		/**
 		 * Must be defined. Must return:

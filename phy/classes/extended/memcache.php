@@ -1,5 +1,12 @@
 <?php
 
+	namespace PHY\Extended;
+
+	if(!class_exists('\Memcache',true)):
+		\PHY\Debug::error('Memcache has not been installed.',E_ERROR);
+		return;
+	endif;
+
 	/**
 	 * Extended to add some debugging methods.
 	 *
@@ -7,7 +14,7 @@
 	 * @package Extended_Memcache
 	 * @author John Mullanaphy
 	 */
-	class Extended_Memcache extends Memcache {
+	class Memcache extends \Memcache {
 
 		private static $COUNT = 0,
 		$DEBUG = false,
@@ -76,7 +83,7 @@
 		 */
 		public function flush() {
 			++self::$COUNT;
-			Debug::stack();
+			\PHY\Debug::stack();
 			$success = parent::flush();
 			self::$SUCCESS += (int)$success;
 			if($success):

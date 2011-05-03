@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 *
 	 * @category Convert

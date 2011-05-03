@@ -1,4 +1,6 @@
 <?php
+	
+	namespace PHY\Image;
 
 	final class Cropper {
 
@@ -132,6 +134,8 @@
 				self::_alpha($image,$watermark,$c_x,$c_y,0,0,$x,$y,$this->watermark_percentage);
 			else:
 				$image = imagecreatetruecolor($this->size[0],$this->size[1]);
+				$white = imagecolorallocate($image,255,255,255);
+				imagefilledrectangle($image,0,0,$this->size[0],$this->size[1],$white);
 				imagecopyresampled($image,$source,0,0,$this->coordinates[0],$this->coordinates[1],$this->size[0],$this->size[1],$this->original_size[0],$this->original_size[1]);
 			endif;
 

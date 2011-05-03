@@ -1,5 +1,9 @@
 <?php
-	class Container_Raw extends Container_Abstract {
+
+	namespace PHY\Container;
+
+	class Raw extends \PHY\Container\_Abstract {
+
 		protected $item = false;
+
 	}
-?>

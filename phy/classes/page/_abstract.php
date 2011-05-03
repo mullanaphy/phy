@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	/**
 	 * The default Page class. All Page classs should extend Page.
 	 *
@@ -23,6 +25,13 @@
 		 * @access protected
 		 */
 		protected $parameters = array();
+		/**
+		 * Our Template object.
+		 *
+		 * @var $Template
+		 * @access protected
+		 */
+		protected $Template = array();
 
 		/**
 		 * Load a new Page view.
@@ -31,9 +40,8 @@
 		 */
 		public function __construct($delay=false) {
 			$this->parameters();
-			Template::init();
+			$this->Template = new \PHY\Template;
 			$this->parse();
-			Template::flush();
 		}
 
 		/**
@@ -43,7 +51,7 @@
 		 * @param array $arguments
 		 */
 		public function __call($method,$arguments) {
-			Debug::warning(get_class($this).'::'.$method.'() does not exist.');
+			\PHY\Debug::error(get_class($this).'::'.$method.'() does not exist.',E_USER_WARNING);
 		}
 
 		/**
@@ -75,7 +83,7 @@
 					exit;
 			endswitch;
 			$this->parameters['method'] = $_SERVER['REQUEST_METHOD'];
-			$this->tag = Markup::tag();
+			$this->tag = \PHY\Markup::tag();
 		}
 
 		/**
@@ -83,8 +91,8 @@
 		 */
 		final protected function parse() {
 			if(Headers::mobile()):
-				$Reflection = new ReflectionClass(get_class($this));
-				if($Reflection->implementsInterface('interface_page_mobile')) $this->mobile();
+				$Reflection = new \ReflectionClass(get_class($this));
+				if($Reflection->implementsInterface('\PHY\Interfaces\Page\mobile')) $this->mobile();
 				else $this->html();
 			else:
 				$this->html();

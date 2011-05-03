@@ -1,5 +1,7 @@
 <?php
 
+	namespace PHY;
+
 	final class Singleton {
 
 		private static $_instances = array();
@@ -9,7 +11,7 @@
 		}
 
 		public function __clone() {
-			trigger_error('Singleton Classes cannot be cloned',E_USER_ERROR);
+			\PHY\Debug::error('Singleton Classes cannot be cloned.',E_USER_ERROR);
 		}
 
 		public function instance($Class=false,$id=0) {

@@ -1,19 +1,21 @@
 <?php
 
+	namespace PHY\Page;
+
 	/**
 	 * @package Page_Index
 	 * @category Page
 	 * @author John Mullanaphy
 	 */
-	class Page_Index extends Page {
+	class Index extends Page {
 
 		public function html() {
-			Template::title('Welcome');
-			Template::section();
-			Template::column(.45);
-			Template::append($this->welcome());
-			Template::column(.45);
-			Template::append($this->chained());
+			$this->Template->title('Welcome');
+			$this->Template->section();
+			$this->Template->column(.45);
+			$this->Template->append($this->welcome());
+			$this->Template->column(.45);
+			$this->Template->append($this->chained());
 		}
 
 		/**
