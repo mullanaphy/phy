@@ -13,7 +13,7 @@
 			'footer' => false,
 			'h1' => 'h2',
 			'header' => false,
-			'hide_if_zero' => false,
+			'hide_if_empty' => false,
 			'id' => false,
 			'info' => false,
 			'title' => false,
@@ -67,7 +67,7 @@
 				'footer' => false,
 				'h1' => 'h2',
 				'header' => false,
-				'hide_if_zero' => false,
+				'hide_if_empty' => false,
 				'id' => false,
 				'info' => false,
 				'title' => false,
@@ -144,7 +144,7 @@
 				if(isset($attributes['style'])) $attributes['style'] = 'width:'.$this->container['width'].';'.$attributes['style'];
 				else $attributes['style'] = 'width:'.$this->container['width'].';';
 			endif;
-			if($this->container['hide_if_zero'] && $this->is_empty()):
+			if($this->container['hide_if_empty'] && $this->is_empty()):
 				if(isset($attributes['style'])) $attributes['style'] = 'display:none;'.$attributes['style'];
 				else $attributes['style'] = 'display:none;';
 			endif;
@@ -179,7 +179,7 @@
 		 * @return array
 		 */
 		public function values() {
-			if($this->container['hide_if_zero'] && !count($this->container['content'])) return array();
+			if($this->container['hide_if_empty'] && !count($this->container['content'])) return array();
 
 			# Holder element.
 			$return = array('type' => $this->type);
