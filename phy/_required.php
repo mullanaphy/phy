@@ -1,7 +1,7 @@
 <?php
 
 	const DEBUGGER = true;
-	
+
 	call_user_func(
 		function() {
 
@@ -17,14 +17,11 @@
 			# Constants.
 			require_once BASE_PATH.'/phy/constants/_required.php';
 
-			# Config.
-			require_once BASE_PATH.'/phy/config/_required.php';
-
 			# Setting the XSRF cookie.
-			if(!isset($_COOKIE['xsrf_id'])) PHY\Cookie::set('xsrf_id',md5(PHY\String::random(16)),INT_YEAR);
+			if(!isset($_COOKIE['xsrf_id'])) \PHY\Cookie::set('xsrf_id',md5(\PHY\String::random(16)),INT_YEAR);
 
 			# Headers. Also note, HTML\PHP pages will also call session_start.
-			new PHY\Headers;
+			new \PHY\Headers;
 
 			# See if errors should be printed to screen, if it's a devo server
 			# then sure.
@@ -45,6 +42,6 @@
 			endif;
 
 			# Start timing page generation
-			PHY\Debug::timer(true);
+			\PHY\Debug::timer(true);
 		}
 	);

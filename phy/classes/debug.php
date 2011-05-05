@@ -11,6 +11,7 @@
 	 * @final
 	 * @static
 	 */
+	
 	final class Debug {
 
 		static private $_throw = false,

@@ -1,23 +1,24 @@
 <?php
 
-	# Load up phy.
+	namespace PHY;
+
 	require_once 'phy/_required.php';
 
 	call_user_func(
 		function() {
-			if(isset($_GET['page'])):
-				if(class_exists('Page_'.str_replace('-','_',$_GET['page']).'_Controller',true)):
-					$_ = 'Page_'.ucfirst(str_replace('-','_',$_GET['page'])).'_Controller';
+			$view = str_replace(array('/phy','/'),array('','\\'),$_SERVER['REQUEST_URI']);
+			if($view&&$view!=='\\'):
+				if(class_exists('\PHY\View\\'.$view.'\Controller',false)):
+					$_ = '\PHY\View\\'.$view.'\Controller';
 					new $_;
-				elseif(class_exists('Page_'.str_replace('-','_',$_GET['page']),true)):
-					$_ = 'Page_'.ucfirst(str_replace('-','_',$_GET['page']));
+				elseif(class_exists('\PHY\View\\'.$view,false)):
+					$_ = '\PHY\View\\'.$view;
 					new $_;
 				else:
-					new Page_Error;
-					exit;
+					new View\Error;
 				endif;
 			else:
-				new Page_Index;
+				new View\Index;
 			endif;
 		}
 	);

@@ -1,6 +1,8 @@
 <?php
 
-	# Load up phy.
+	namespace PHY;
+
+# Load up phy.
 	require_once 'phy/_required.php';
 
 	call_user_func(
@@ -27,17 +29,14 @@
 
 			$parameters['method'] = isset($parameters['method']) && in_array(strtoupper($parameters['method']),API::methods())?strtoupper($parameters['method']):$_SERVER['REQUEST_METHOD'];
 
-			# See if we're from an internal AJAX call.
-			define('IS_AJAX',isset($parameters['_ajax']));
-
 			# We have user login\out.
 			if(!isset($parameters['user'],$parameters['password'])):
 				$xsrf_id = isset($parameters['xsrf_id'])?$parameters['xsrf_id']:false;
 				if(!$xsrf_id || !isset($_COOKIE['xsrf_id']) || ($xsrf_id != $_COOKIE['xsrf_id'])):
 					header('HTTP/1.1 403 '.Constant::STATUS_CODE(403));
 					header('Content-type: application/json; charset=utf-8');
-					echo json_encode('Please use http://api.lafango.com/ for outside requests. #'.__LINE__);
-					new API_Error(isset($parameters['controller'])?$parameters['controller']:'null',$parameters['method'],'Please use http://api.lafango.com/ for outside requests. #'.(__LINE__ - 1),$parameters);
+					echo json_encode('Please user our API url for offsite requests. #'.__LINE__);
+					new API\Error(isset($parameters['controller'])?$parameters['controller']:'null',$parameters['method'],'Please use http://api.lafango.com/ for outside requests. #'.(__LINE__ - 1),$parameters);
 					exit;
 				endif;
 			endif;
@@ -46,7 +45,7 @@
 				header('HTTP/1.1 404 '.Constant::STATUS_CODE(404));
 				header('Content-type: application/json; charset=utf-8');
 				echo json_encode('Controller was not provided. #'.__LINE__);
-				new API_Error('null',$parameters['method'],'Controller was not provided. #'.(__LINE__ - 1),$parameters);
+				new API\Error('null',$parameters['method'],'Controller was not provided. #'.(__LINE__ - 1),$parameters);
 				exit;
 			endif;
 
@@ -62,7 +61,7 @@
 					);
 				endif;
 				if($run['status'] >= 300 || $run['status'] < 200):
-					new API_Error('module',$parameters['method'],$run,$parameters);
+					new API\Error('module',$parameters['method'],$run,$parameters);
 				endif;
 			else:
 				$API = new API($parameters['controller'],$parameters);
@@ -71,7 +70,7 @@
 						'status' => 404,
 						'response' => 'Action was not found. #'.__LINE__
 					);
-				if($run['status'] >= 300 || $run['status'] < 200) new API_Error($parameters['controller'],isset($parameters['action'])?$parameters['action']:'get',$run,$parameters);
+				if($run['status'] >= 300 || $run['status'] < 200) new API\Error($parameters['controller'],isset($parameters['action'])?$parameters['action']:'get',$run,$parameters);
 			endif;
 
 			# Redirect or display nothing on a 204.
@@ -97,13 +96,13 @@
 			if(isset($parameters['_ajax'])):
 				header('Content-type: application/json; charset=utf-8');
 				if(is_array($run['response']) && isset($run['response']['content']) && is_object($run['response']['content']) && preg_match('#Markup|Container#i',get_class($run['response']['content']))):
-					$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup_HTML5::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
+					$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
 					$run['response']['content'] = (string)$run['response']['content'];
 					if(Template::files()) $run['response']['files'] = Template::files();
 					$run['response'] = json_encode($run['response']);
 				elseif(is_object($run['response']) && preg_match('#Markup|Container#i',get_class($run['response']))):
 					$run['response'] = array(
-						'console' => 'Generation: '.Debug::timer().'; Elements: '.Markup_HTML5::elements().'; Server: '.$_SERVER['SERVER_ADDR'],
+						'console' => 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'],
 						'content' => (string)$run['response']
 					);
 					if(Template::files()) $run['response']['files'] = Template::files();
@@ -112,7 +111,7 @@
 					$run['response'] = (string)$run['response'];
 				else:
 					if(is_array($run['response'])):
-						$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup_HTML5::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
+						$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
 						if(Template::files()) $run['response']['files'] = Template::files();
 					endif;
 					$run['response'] = json_encode($run['response']);
@@ -128,39 +127,37 @@
 				exit;
 			elseif(isset($parameters['xsrf']) || isset($parameters['xsrf_id']) || isset($parameters['_caller'])):
 				header('HTTP/1.1 '.$run['status'].' '.Constant::STATUS_CODE($run['status']));
-				$Template = new Template;
-				$Template->section('dark');
-				$Template->css('rest/0.1.0.css');
-				$tag = new Markup_HTML5;
+				Template::init();
+				Template::section('dark');
+				Template::css('rest/0.1.0.css');
+				$tag = new Markup;
 				if($run['status'] >= 200 && $run['status'] < 300):
-					$Container = new Container_Generic;
+					$Container = new Container;
 					$Container->title('Alert');
 					$Container->header(
 						$tag->url(
-							'Go back',
-							isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'javascript:window.history.go(-1);'
+							'Go back',isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'javascript:window.history.go(-1);'
 						)
 					);
 					$Container->append('Greetings, you have received this page either by not having JavaScript activated or by opening a JavaScript link in a new tab\window. Do not worry, any actions you perform on this page will work the same as if you opened it as a popup box.');
-					$Template->append($Container);
+					Template::append($Container);
 				endif;
-				$Template->section('normal');
+				Template::section('normal');
 				if(is_object($run['response']) && preg_match('#Markup|Container#i',get_class($run['response']))):
-					$Template->append($run['response']);
+					Template::append($run['response']);
 				elseif(is_array($run['response']) && isset($run['response']['content']) && is_object($run['response']['content']) && preg_match('#Markup|Container#i',get_class($run['response']['content']))):
-					if(isset($run['response']['files'])) $Template->files($run['response']['files']);
-					$Template->append($run['response']['content']);
+					if(isset($run['response']['files'])) Template::files($run['response']['files']);
+					Template::append($run['response']['content']);
 				else:
-					$Container = new Container_Generic;
+					$Container = new Container;
 					$Container->title('Alert');
 					$Container->header(
 						$tag->url(
-							'Go back',
-							isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'javascript:window.history.go(-1);'
+							'Go back',isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'javascript:window.history.go(-1);'
 						)
 					);
 					$Container->append(is_array($run['response']) && isset($run['response']['content'])?$run['response']['content']:$run['response']);
-					$Template->append($Container);
+					Template::append($Container);
 				endif;
 				exit;
 			elseif(isset($parameters['xml'])):

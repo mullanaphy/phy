@@ -23,7 +23,7 @@
 		 * @param string $key Path for the desired value.
 		 * @return mixed
 		 */
-		static public function CONFIG($key=NULL) {
+		static public function config($key=NULL) {
 			static $configs = array();
 
 			$values = explode('/',$key);

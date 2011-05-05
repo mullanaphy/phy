@@ -208,7 +208,7 @@
 			return $this;
 		}
 
-		public function pagination($settings=false,$attributes=false) {
+		public function pagination(array $settings=array(),array $attributes=array()) {
 			if(isset($settings['url'],$settings['total']) && $settings['total'] > 1):
 				if(!is_array($attributes)) $attributes = array();
 				if(isset($attributes['class'])) $attributes['class'] .= ' pagination';

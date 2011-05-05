@@ -1,8 +1,10 @@
 <?php
 
+	namespace PHY;
+	
 	set_time_limit(0);
 	header('Cache-Control: no-cache, must-revalidate');
-	header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+	header('Expires: Fri, 4 May 1984 16:11:00 GMT');
 	header('Content-type:text/html;charset=utf-8');
 	flush();
 

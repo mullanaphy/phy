@@ -10,7 +10,7 @@
 	 * @author John Mullanaphy
 	 * @abstract
 	 */
-	abstract class Page {
+	abstract class View {
 
 		/**
 		 * Markup Tag.
@@ -51,13 +51,13 @@
 		 * @param array $arguments
 		 */
 		public function __call($method,$arguments) {
-			\PHY\Debug::error(get_class($this).'::'.$method.'() does not exist.',E_USER_WARNING);
+			throw new Exception\Method_Does_Not_Exist(__LINE__,$method,$arguments);
 		}
 
 		/**
 		 * Method for templates and HTML output.
 		 */
-		abstract public function html();
+		abstract public function structure();
 
 		/**
 		 * Parses input parameters into $this->parameters.
@@ -93,9 +93,9 @@
 			if(Headers::mobile()):
 				$Reflection = new \ReflectionClass(get_class($this));
 				if($Reflection->implementsInterface('\PHY\Interfaces\Page\mobile')) $this->mobile();
-				else $this->html();
+				else $this->structure();
 			else:
-				$this->html();
+				$this->structure();
 			endif;
 		}
 

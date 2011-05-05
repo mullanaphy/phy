@@ -18,7 +18,7 @@
 		 * @param stdClass $Class
 		 * @return array
 		 */
-		static public function object_to_array(stdClass $Class) {
+		static public function object_to_array(\stdClass $Class) {
 			$Class = (array)$Class;
 			foreach($Class as $key => $value) if(is_object($value) && get_class($value) === 'stdClass') $Class[$key] = self::object_to_array($value);
 			return $Class;
