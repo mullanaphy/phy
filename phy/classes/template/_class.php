@@ -971,7 +971,10 @@
 				);
 
 			# Add meta tags.
-			$this->meta['name_keywords']['content'] = 'talent, '.$this->_meta().$this->meta['name_keywords']['content'];
+			$meta = $this->_meta();
+			$this->meta['name_keywords']['content'] = join(', ',Registry::get('config/site/keywords')).($meta
+					?', '.$meta
+					:NULL).', '.join(', ',$this->meta['name_keywords']['content']);
 			foreach($this->meta as $meta):
 				$tag = $this->tag->meta;
 				$tag->attributes($meta);
