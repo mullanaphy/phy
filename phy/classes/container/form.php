@@ -17,7 +17,9 @@
 		$captcha = false;
 
 		public function __construct($attributes=false) {
-			$this->hidden['xsrf_id'] = isset($_COOKIE['xsrf_id']) && $_COOKIE['xsrf_id']?$_COOKIE['xsrf_id']:NULL;
+			$this->hidden['xsrf_id'] = isset($_COOKIE['xsrf_id']) && $_COOKIE['xsrf_id']
+				?$_COOKIE['xsrf_id']
+				:NULL;
 			$this->hidden['_form'] = 1;
 			$this->container['attributes']['method'] = 'post';
 			parent::__construct($attributes);
@@ -220,14 +222,26 @@
 					if($i <= 0) continue;
 					elseif($i > $settings['total']) break;
 					$pages->append(
-						$this->tag->li($i != $settings['page_id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
+						$this->tag->li($i != $settings['page_id']
+								?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])
+										?$settings['attributes']
+										:NULL)
+								:$this->tag->strong($i))
 					);
 				endforeach;
 				$pages->prepend(
-					$this->tag->li($settings['page_id'] > 1?$this->tag->url('&laquo;',str_replace('[%i]',($settings['page_id'] - 1),$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->span('&laquo;'),array('class' => 'button_dark'))
+					$this->tag->li($settings['page_id'] > 1
+							?$this->tag->url('&laquo;',str_replace('[%i]',($settings['page_id'] - 1),$settings['url']),isset($settings['attributes'])
+									?$settings['attributes']
+									:NULL)
+							:$this->tag->span('&laquo;'),array('class' => 'button_dark'))
 				);
 				$pages->append(
-					$this->tag->li($settings['page_id'] < $settings['total']?$this->tag->url('&raquo;',str_replace('[%i]',($settings['page_id'] + 1),$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->span('&raquo;'),array('class' => 'button_dark'))
+					$this->tag->li($settings['page_id'] < $settings['total']
+							?$this->tag->url('&raquo;',str_replace('[%i]',($settings['page_id'] + 1),$settings['url']),isset($settings['attributes'])
+									?$settings['attributes']
+									:NULL)
+							:$this->tag->span('&raquo;'),array('class' => 'button_dark'))
 				);
 				$this->container['footer'] = array(
 					'content' => $pages,
@@ -246,7 +260,9 @@
 			# Set the value.
 			if(!is_array($attributes)) $attributes = array('value' => $label);
 			else $attributes['value'] = $label;
-			$attributes['value'] = $attributes['value']?htmlentities($attributes['value'],ENT_QUOTES,'utf-8',false):'Submit';
+			$attributes['value'] = $attributes['value']
+				?htmlentities($attributes['value'],ENT_QUOTES,'utf-8',false)
+				:'Submit';
 
 			# Set submit accordingly.
 			$this->settings['submit'] = $attributes;

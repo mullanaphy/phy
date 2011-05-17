@@ -35,7 +35,9 @@
 		 */
 		public function __call($function,$parameters=NULL) {
 			if($function === 'class' && $parameters !== NULL):
-				if(isset($parameters[0]) && is_array($parameters[0])) $this->_class($parameters[0],isset($parameters[1])?!!$parameters[1]:true);
+				if(isset($parameters[0]) && is_array($parameters[0])) $this->_class($parameters[0],isset($parameters[1])
+							?!!$parameters[1]
+							:true);
 				else $this->_class($parameters);
 			endif;
 			return $this;
@@ -47,7 +49,7 @@
 		 * @return \PHY\Container\_Abstract
 		 */
 		public function __construct($attributes=false) {
-			$this->tag = \PHY\Markup::tag();
+			$this->tag = \PHY\Markup::instance();
 			if($attributes) $this->attributes = $attributes;
 			return $this;
 		}
@@ -354,7 +356,9 @@
 		 */
 		public function h1($h1='h1') {
 			if(is_numeric($h1) && $h1 >= 1 && $h1 <= 6) $this->container['h1'] = 'h'.$h1;
-			else $this->container['h1'] = in_array($h1,array('h1','h2','h3','h4','h5','h6'))?$h1:'h2';
+			else $this->container['h1'] = in_array($h1,array('h1','h2','h3','h4','h5','h6'))
+					?$h1
+					:'h2';
 			return $this;
 		}
 
@@ -474,28 +478,48 @@
 					if($i <= 0) continue;
 					elseif($i >= $tens) break;
 					$pages->append(
-						$this->tag->li($i != $settings['id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
+						$this->tag->li($i != $settings['id']
+								?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])
+										?$settings['attributes']
+										:NULL)
+								:$this->tag->strong($i))
 					);
 				endforeach;
 				foreach(range($settings['id'] - 4,$settings['id'] + 4) as $i):
 					if($i <= 0) continue;
 					elseif($i > $settings['total']) break;
 					$pages->append(
-						$this->tag->li($i != $settings['page_id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
+						$this->tag->li($i != $settings['page_id']
+								?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])
+										?$settings['attributes']
+										:NULL)
+								:$this->tag->strong($i))
 					);
 				endforeach;
 				foreach(range($tens,$tens + 30,10) as $i):
 					if($i <= $tens) continue;
 					elseif($i > $settings['total']) break;
 					$pages->append(
-						$this->tag->li($i != $settings['id']?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])?$settings['attributes']:NULL):$this->tag->strong($i))
+						$this->tag->li($i != $settings['id']
+								?$this->tag->url($i,str_replace('[%i]',$i,$settings['url']),isset($settings['attributes'])
+										?$settings['attributes']
+										:NULL)
+								:$this->tag->strong($i))
 					);
 				endforeach;
 				$pages->prepend(
-					$this->tag->li($settings['page_id'] > 1?$this->tag->url('&laquo;',str_replace('[%i]',($settings['id'] - 1),$settings['url']),isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')):$this->tag->span('&laquo;',array('class' => 'button disabled')),NULL)
+					$this->tag->li($settings['page_id'] > 1
+							?$this->tag->url('&laquo;',str_replace('[%i]',($settings['id'] - 1),$settings['url']),isset($settings['attributes'])
+									?array_merge($settings['attributes'],array('class' => 'ajax button black'))
+									:array('class' => 'button black'))
+							:$this->tag->span('&laquo;',array('class' => 'button disabled')),NULL)
 				);
 				$pages->append(
-					$this->tag->li($settings['id'] < $settings['total']?$this->tag->url('&raquo;',str_replace('[%i]',($settings['id'] + 1),$settings['url']),isset($settings['attributes'])?array_merge($settings['attributes'],array('class' => 'ajax button black')):array('class' => 'button black')):$this->tag->span('&raquo;',array('class' => 'button disabled')),NULL)
+					$this->tag->li($settings['id'] < $settings['total']
+							?$this->tag->url('&raquo;',str_replace('[%i]',($settings['id'] + 1),$settings['url']),isset($settings['attributes'])
+									?array_merge($settings['attributes'],array('class' => 'ajax button black'))
+									:array('class' => 'button black'))
+							:$this->tag->span('&raquo;',array('class' => 'button disabled')),NULL)
 				);
 				$this->container['footer'] = array(
 					'content' => array(
@@ -505,7 +529,9 @@
 								$this->tag->strong($settings['id']),
 								' of ',
 								$this->tag->strong(
-									($settings['total'] > 100)?'100+':$settings['total']
+									($settings['total'] > 100)
+										?'100+'
+										:$settings['total']
 								)
 							)
 						),
@@ -680,7 +706,9 @@
 			if(!$this->container['title'] && !$this->container['header']) return false;
 			# Add header if it exists.
 			$header = $this->tag->header;
-			$tag = in_array($this->container['h1'],array('h1','h2','h3','h4','h5','h6'))?$this->container['h1']:'h2';
+			$tag = in_array($this->container['h1'],array('h1','h2','h3','h4','h5','h6'))
+				?$this->container['h1']
+				:'h2';
 			if($this->container['title']) $header->append(
 					$this->tag->$tag(
 						$this->container['title']['content'],$this->container['title']['attributes']

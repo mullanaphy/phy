@@ -80,7 +80,9 @@
 		 */
 		public function ajax($data=NULL) {
 			$this->attributes(array('class' => 'ajax'));
-			return is_array($data)?$this->data($data):$this;
+			return is_array($data)
+				?$this->data($data)
+				:$this;
 		}
 
 		/**
@@ -187,12 +189,20 @@
 			$return = array();
 			$onsubmit = false;
 			foreach($this->attributes as $key => $value):
-				if($key === 'data' && is_array($value)) foreach($value as $k => $v) $return[] = 'data-'.$k.'="'.htmlentities(is_array($v)?join(';',$v):$v,ENT_QUOTES,'UTF-8',false).'"';
-				else $return[] = $key.'="'.htmlentities(is_array($value)?join($key === 'class'?' ':';',$value):$value,ENT_QUOTES,'UTF-8',false).'"';
+				if($key === 'data' && is_array($value)) foreach($value as $k => $v) $return[] = 'data-'.$k.'="'.htmlentities(
+								is_array($v)
+									?join(';',$v)
+									:$v,ENT_QUOTES,'UTF-8',false).'"';
+				else $return[] = $key.'="'.htmlentities(
+							is_array($value)
+								?join(' ',$value)
+								:$value,ENT_QUOTES,'UTF-8',false).'"';
 				if($key === 'onsubmit') $onsubmit = true;
 			endforeach;
 			if($this->tag === 'form' && !$onsubmit && in_array(USER_BROWSER,array('ie','ie6'))) $return[] = 'onsubmit=";var d=document.documentElement;if(d.onsubmit){return d.onsubmit(event);}else{return Event.fire(d,\'submit\',event);}"';
-			return ((count($return))?' '.join(' ',$return):false);
+			return ((count($return))
+				?' '.join(' ',$return)
+				:false);
 		}
 
 		/**

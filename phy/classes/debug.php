@@ -114,12 +114,14 @@
 		static public function error($error,$fatal=false) {
 			if(!DEBUGGER) return;
 			$debug = debug_backtrace();
+			reset($debug);
+			$first = current($debug);
 			if(self::$_throw):
-				if($fatal) throw new \PHY\Exception\Severe($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])).' ON LINE #'.((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']));
-				else throw new \PHY\Exception\Warning($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])).' ON LINE #'.((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']));
+				if($fatal) throw new \PHY\Exception\Severe($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',$first['file'].' ON LINE #'.$first['line']));
+				else throw new \PHY\Exception\Warning($error.' (WARNING #'.++self::$_count.' FROM '.str_replace(BASE_PATH,'/',$first['file']),' ON LINE #'.$first['line']);
 			else:
 				echo '<pre style="background:#fee;border:solid 1px #fcc;line-height:130%;margin:5px;font:12px \'courier new\';padding:5px;text-align:left;color:#f00;">',
-				'<h2 style="border-bottom:solid 2px #fcc;color:#f00;font:bold 16px \'courier new\';margin:0 0 5px;padding:0;">WARNING #',++self::$_count,': "',str_replace(BASE_PATH,'/',((isset($debug[1]['file']))?$debug[1]['file']:$debug[2]['file'])),'" on line "',((isset($debug[1]['line']))?$debug[1]['line']:$debug[2]['line']),'"</h2>',
+				'<h2 style="border-bottom:solid 2px #fcc;color:#f00;font:bold 16px \'courier new\';margin:0 0 5px;padding:0;">WARNING #',++self::$_count,': "',str_replace(BASE_PATH,'/',$first['file']),'" on line "',$first['line'],'"</h2>',
 				str_replace(array('<','>'),array('&lt;','&gt;'),$error),
 				(($fatal)?'<h3 style="border-top:solid 2px #fcc;color:#f00;font:bold 16px \'courier new\';margin:5px 0 0;padding:2px 0 0;">Error is fatal</h3>':false),
 				'</pre>';

@@ -13,7 +13,7 @@
 	 */
 	final class Markup {
 		const DEFAULT_LANGUAGE = '\PHY\Markup\HTML5';
-		static private $tag = NULL;
+		static private $instance = NULL;
 
 		/**
 		 * On construct you can define a language. Note, if you call it as an
@@ -23,30 +23,32 @@
 		 * @return Markup_Abstract
 		 */
 		public function __construct($language=NULL) {
-			return self::tag($language);
+			return self::instance($language);
 		}
 
 		/**
-		 * Abstracts to self::$tag's __call.
+		 * Abstracts to self::$instance's __call.
 		 */
-		public function __call($function,$parameters) {
-			if(method_exists(self::$tag,$function)) return call_user_func_array(array(self::$tag,$function),$parameters);
-			else return self::$tag->__call($function,$parameters);
+		public function __call($tag,$parameters) {
+			if($tag === 'use') return $this->instance($parameters[0]);
+			elseif(method_exists(self::$instance,$tag)) return call_user_func_array(array(self::$instance,$tag),$parameters);
+			else return self::$instance->__call($tag,$parameters);
 		}
 
 		/**
-		 * Abstracts to self::$tag's __call.
+		 * Abstracts to self::$instance's __call.
 		 */
 		public static function __callStatic($function,$parameters) {
-			if(method_exists(self::$tag,$function)) return call_user_func_array(array(self::$tag,$function),$parameters);
-			else return self::$tag->__call($function,$parameters);
+			if(method_exists(self::$instance,$function)) return call_user_func_array(array(self::$instance,$function),$parameters);
+			elseif(self::$instance) return self::$instance->__call($function,$parameters);
+			else return 0;
 		}
 
 		/**
-		 * Abstracts to self::$tag's __get.
+		 * Abstracts to self::$instance's __get.
 		 */
-		public function __get($function) {
-			return self::$tag->$function;
+		public function __get($tag) {
+			return self::$instance->$tag;
 		}
 
 		/**
@@ -54,29 +56,35 @@
 		 *
 		 * <code>
 		 * <?php
-		 *    $tag = Markup::tag();
-		 *    var_dump($tag); // Returns a Markup_Abstract object.
+		 *    $instance = Markup::tag();
+		 *    var_dump($instance); // Returns a Markup_Abstract object.
 		 * </code>
 		 *
 		 * @param string $language
 		 * @return Markup_Abstract
 		 */
-		static public function tag($language=NULL) {
+		static public function instance($language=NULL) {
 			$default = self::DEFAULT_LANGUAGE;
 			if($language === NULL):
-				if(self::$tag === NULL):
-					self::$tag = new $default;
+				if(self::$instance === NULL):
+					self::$instance = new $default;
+				endif;
+			elseif(is_object($language)):
+				if($language instanceof \PHY\Markup\_Abstract):
+					self::$instance = $language;
+				elseif(self::$instance === NULL):
+					self::$instance = new $default;
 				endif;
 			elseif(class_exists('\PHY\Markup\\'.$language,true)):
 				$language = '\PHY\Markup\\'.strtoupper($language);
-				self::$tag = new $language;
-				if(!(self::$tag instanceof \PHY\Markup\_Abstract)):
-					self::$tag = new $default;
+				self::$instance = new $language;
+				if(!(self::$instance instanceof \PHY\Markup\_Abstract)):
+					self::$instance = new $default;
 				endif;
 			else:
-				self::$tag = new $default;
+				self::$instance = new $default;
 			endif;
-			return self::$tag;
+			return self::$instance;
 		}
 
 	}

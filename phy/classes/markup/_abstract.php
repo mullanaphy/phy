@@ -29,13 +29,18 @@
 			$function = strtolower($function);
 			if(in_array($function,array_keys($this->tags))):
 				if(in_array($function,$this->voids)):
-					$this->element = new \PHY\Markup\Element($function,((isset($parameters[0]))?$this->_attributes($function,$parameters[0]):NULL),true);
+					$this->element = new \PHY\Markup\Element($function,((isset($parameters[0]))
+								?$this->_attributes($function,$parameters[0])
+								:NULL),true);
 				else:
-					$this->element = new \PHY\Markup\Element($function,((isset($parameters[1]))?$this->_attributes($function,$parameters[1]):NULL),false);
+					$this->element = new \PHY\Markup\Element($function,((isset($parameters[1]))
+								?$this->_attributes($function,$parameters[1])
+								:NULL),false);
 					if(isset($parameters[0])) $this->element->append($parameters[0]);
 				endif;
 				return $this->element;
 			else:
+				\PHY\Debug::stack();
 				trigger_error('Tag <strong>'.strtoupper($function).'</strong> is not defined in <strong>'.str_replace('Markup_','',get_class($this)).'</strong>',E_USER_NOTICE);
 				return false;
 			endif;
@@ -105,7 +110,9 @@
 					foreach($this->voids as $key => $value) if($tag === $value) unset($this->voids[$key]);
 				endif;
 			else:
-				$this->tags[$tag] = (($attributes !== NULL && (is_array($attributes) || $attributes === true))?$attributes:true);
+				$this->tags[$tag] = (($attributes !== NULL && (is_array($attributes) || $attributes === true))
+						?$attributes
+						:true);
 				if($void) $this->voids[] = $tag;
 			endif;
 			return true;
@@ -258,7 +265,9 @@
 			$attributes = $this->_attributes('img',$attributes);
 			if($title !== NULL) $attributes['alt'] = $title;
 			$attributes['src'] = $src;
-			if(!isset($attributes['alt'])) $attributes['alt'] = is_string($src)?$src:NULL;
+			if(!isset($attributes['alt'])) $attributes['alt'] = is_string($src)
+					?$src
+					:NULL;
 			$img = new \PHY\Markup\Element('img',$attributes,true);
 			return $img;
 		}
@@ -322,7 +331,9 @@
 		public function radio($name=NULL,array $values,$attributes=NULL) {
 			if($name === NULL || !$values) return;
 			$radio = array();
-			$checked = is_array($attributes) && isset($attributes['checked'])?$attributes['checked']:false;
+			$checked = is_array($attributes) && isset($attributes['checked'])
+				?$attributes['checked']
+				:false;
 			$attributes = $this->_attributes('label',$attributes);
 			if(!is_array($attributes)) $attributes = array();
 			if(isset($attributes['id'])):
@@ -334,7 +345,9 @@
 			if(!isset($attributes['class'])) $attributes['class'] = 'radio';
 			foreach($values as $key => $value):
 				if(is_array($value)):
-					$attributes_input = ((isset($value['attributes'])?$this->_attributes('input',$value['attributes']):array()));
+					$attributes_input = ((isset($value['attributes'])
+							?$this->_attributes('input',$value['attributes'])
+							:array()));
 					if(isset($value['checked']) && $value['checked'] || $key == $checked) $attributes_input['checked'] = 'checked';
 					$attributes_input['name'] = $name;
 					$attributes_input['id'] = $id.'_'.$key;
@@ -353,13 +366,15 @@
 						new \PHY\Markup\Element(
 							'input',
 							(
-							($key == $checked)?array(
+							($key == $checked)
+								?array(
 								'checked' => 'checked',
 								'id' => $id.'_'.$key,
 								'name' => $name,
 								'type' => 'radio',
 								'value' => $key
-								):array(
+								)
+								:array(
 								'id' => $id.'_'.$key,
 								'name' => $name,
 								'type' => 'radio',
@@ -420,13 +435,25 @@
 					if(is_array($value['content'])):
 						$optgroup = new \PHY\Markup\Element('optgroup',array());
 						foreach($value['content'] as $k => $v):
-							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => ((isset($v['value']))?$v['value']:$v['content'])):array('value' => ((isset($v['value']))?$v['value']:$v['content']))));
+							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)
+										?array('selected' => 'selected','value' => ((isset($v['value']))
+											?$v['value']
+											:$v['content']))
+										:array('value' => ((isset($v['value']))
+											?$v['value']
+											:$v['content']))));
 							$option->append($v['content']);
 							$optgroup->append($option);
 						endforeach;
 						$select->append($optgroup);
 					else:
-						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => ((isset($value['value']))?$value['value']:$value['content'])):array('value' => ((isset($value['value']))?$value['value']:$value['content']))));
+						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)
+									?array('selected' => 'selected','value' => ((isset($value['value']))
+										?$value['value']
+										:$value['content']))
+									:array('value' => ((isset($value['value']))
+										?$value['value']
+										:$value['content']))));
 						$option->append($value);
 						$select->append($option);
 					endif;
@@ -434,13 +461,17 @@
 					if(is_array($value)):
 						$optgroup = new \PHY\Markup\Element('optgroup',array());
 						foreach($value as $k => $v):
-							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)?array('selected' => 'selected','value' => $v):array('value' => $v)));
+							$option = new \PHY\Markup\Element('option',(($k === 'selected' || $k === $selected)
+										?array('selected' => 'selected','value' => $v)
+										:array('value' => $v)));
 							$option->append($v);
 							$optgroup->append($option);
 						endforeach;
 						$select->append($optgroup);
 					else:
-						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)?array('selected' => 'selected','value' => $key):array('value' => $key)));
+						$option = new \PHY\Markup\Element('option',(($key === 'selected' || $key === $selected)
+									?array('selected' => 'selected','value' => $key)
+									:array('value' => $key)));
 						$option->append($value);
 						$select->append($option);
 					endif;
@@ -486,7 +517,9 @@
 		 */
 		public function textbox($name=NULL,$size=1,$attributes=NULL) {
 			if($name === NULL) return;
-			$value = isset($attributes['value'])?$attributes['value']:NULL;
+			$value = isset($attributes['value'])
+				?$attributes['value']
+				:NULL;
 			if(isset($attributes['hint'])):
 				if(!$value):
 					if(isset($attributes['class'])) $attributes['class'] = $attributes['class'].' hint';
@@ -494,7 +527,9 @@
 					$value = $attributes['hint'];
 				endif;
 			endif;
-			$attributes = $this->_attributes((($size <= 1)?'input':'textarea'),$attributes);
+			$attributes = $this->_attributes((($size <= 1)
+						?'input'
+						:'textarea'),$attributes);
 			$attributes['name'] = $name;
 			if($size <= 1):
 				if($value !== NULL) $attributes['value'] = htmlentities($value,ENT_QUOTES,'UTF-8',false);
@@ -539,7 +574,9 @@
 			$attributes = $this->_attributes($attributes);
 			$attributes['datetime'] = date('c',$date);
 			$time = new \PHY\Markup\Element('time',$attributes,false);
-			$time->append($format !== NULL?date($format,$date):PHY\String::date($date));
+			$time->append($format !== NULL
+					?date($format,$date)
+					:PHY\String::date($date));
 			return $time;
 		}
 
@@ -560,7 +597,9 @@
 				if(!$item):
 					continue;
 				elseif(is_array($item)):
-					$li_attributes = $this->_attributes('li',isset($item[1])?$item[1]:NULL);
+					$li_attributes = $this->_attributes('li',isset($item[1])
+								?$item[1]
+								:NULL);
 					if(!isset($li_attributes['id']) && isset($attributes['id'])) $li_attributes['id'] = $attributes['id'].'_li_'.$i;
 					$item = $item[0];
 				elseif(isset($attributes['id'])):
@@ -604,6 +643,8 @@
 				else:
 					$link = $url;
 				endif;
+			elseif(\PHY\Validate::email($link)):
+				$link = 'mailto:'.$link;
 			endif;
 			$attributes = $this->_attributes('a',$attributes);
 			if(!isset($attributes['title']) && (is_string($content) || is_numeric($content))) $attributes['title'] = $content;

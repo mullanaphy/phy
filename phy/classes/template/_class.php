@@ -69,19 +69,19 @@
 				),
 				'name_description' => array(
 					'name' => 'description',
-					'content' => \PHY\Core::config('site/description')
+					'content' => \PHY\Registry::get('config/site/description')
 				),
 				'name_keywords' => array(
 					'name' => 'keywords',
-					'content' => \PHY\Core::config('site/keywords')
+					'content' => \PHY\Registry::get('config/site/keywords')
 				),
 				'name_author' => array(
 					'name' => 'author',
-					'content' => \PHY\Core::config('site/name')
+					'content' => \PHY\Registry::get('config/site/name')
 				),
 				'name_contact' => array(
 					'name' => 'contact',
-					'content' => \PHY\Core::config('site/email')
+					'content' => \PHY\Registry::get('config/site/email')
 				),
 				'name_robots' => array(
 					'name' => 'robots',
@@ -93,7 +93,7 @@
 				),
 				'og:site_name' => array(
 					'property' => 'og:site_name',
-					'content' => \PHY\Core::config('site/name')
+					'content' => \PHY\Registry::get('config/site/name')
 				)
 			);
 
@@ -114,8 +114,8 @@
 					$this->tag = new \PHY\Markup;
 			endswitch;
 
-			$this->js['core'] = \PHY\Core::config('files/'.\PHY\Core::config('site/use').'/js');
-			$this->css['core'] = \PHY\Core::config('files/'.\PHY\Core::config('site/use').'/css');
+			$this->js['core'] = \PHY\Registry::get('config/files/js');
+			$this->css['core'] = \PHY\Registry::get('config/files/css');
 
 			echo $this->tag->DOCTYPE,
 			$this->tag->OPENER;
@@ -488,6 +488,38 @@
 		}
 
 		/**
+		 * Append a template source.
+		 * 
+		 * @param string $source
+		 * @param bool $return If true it will return Markup instead of appending it.
+		 * @return string|Markup_Abstract
+		 */
+		public function template($source=NULL,$return=false) {
+			if(!is_string($source) || !$source):
+				\PHY\Debug::error('No source was set to append.');
+				return false;
+			else:
+				$file = false;
+				foreach(array($_SERVER['DOCUMENT_ROOT'].'/phy/templates/'.\PHY\Registry::theme().'/'.$source,$_SERVER['DOCUMENT_ROOT'].'/phy/templates/default/'.$source,BASE_PATH.'phy/templates/'.\PHY\Registry::theme().'/'.$source,BASE_PATH.'phy/templates/default/'.$source) as $check):
+					if(is_file($check)):
+						$file = $check;
+						break;
+					endif;
+				endforeach;
+				if(!$file):
+					\PHY\Debug::error('Source "'.$source.'" could not be found.');
+					return false;
+				endif;
+			endif;
+			ob_start();
+			include $file;
+			$content = ob_get_contents();
+			ob_end_clean();
+			if($return) return $content;
+			else $this->append($content);
+		}
+
+		/**
 		 * Return a Markup object containing all of our body content.
 		 * 
 		 * @return Markup_Abstract
@@ -527,7 +559,7 @@
 
 			# Process the footer.
 			if($this->show['footer']) $body->append($this->footer());
-			if(!\PHY\Core::config('site/production')):
+			if(!\PHY\Registry::get('config/site/production')):
 				foreach($this->js['footer'] as $js) $body->append(
 						$this->tag->script(
 							NULL,array(
@@ -605,10 +637,10 @@
 			$files = array();
 
 			# Devo and Beta servers. We will not combine files on these servers.
-			if(in_array(USER_BROWSER,array('ie','ie6')) || !\PHY\Core::config('site/production')):
+			if(in_array(USER_BROWSER,array('ie','ie6')) || !\PHY\Registry::get('config/site/production')):
 				foreach(array_merge($this->css['core'],$this->css['added'],$this->css['modules']) as $css) $files[] = $this->tag->link(
 							array(
-								'href' => '/css/'.$css,
+								'href' => $css,
 								'rel' => 'stylesheet',
 								'type' => 'text/css'
 							)
@@ -620,7 +652,7 @@
 				# Print CSS.
 				if($this->css['print']) foreach($this->css['print'] as $css) $files[] = $this->tag->link(
 								array(
-									'href' => '/css/'.$css,
+									'href' => $css,
 									'media' => 'print',
 									'rel' => 'stylesheet',
 									'type' => 'text/css'
@@ -639,7 +671,7 @@
 			# Live servers, we combine the files to make less requests per page.
 			elseif(!Headers::bot()):
 				# Core CSS.
-				if(!is_file(BASE_PATH.'public/css/cached/core.'.md5(join('',$this->css['core'])).'.css')):
+				if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/core.'.md5(join('',$this->css['core'])).'.css')):
 					$files_content = NULL;
 					foreach($this->css['core'] as $css):
 						if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -650,14 +682,14 @@
 										'type' => 'text/css'
 									)
 							);
-						elseif(is_file(BASE_PATH.'public/css/'.$css)):
-							$FILE = fopen(BASE_PATH.'public/css/'.$css,'r');
-							$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(BASE_PATH.'public/css/'.$css))."\n";
+						elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
+							$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
 							fclose($FILE);
 						endif;
 					endforeach;
 					if(strlen($files_content) > 0):
-						$FILE = fopen(BASE_PATH.'public/css/cached/core.'.md5(join('',$this->css['core'])).'.css','w');
+						$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/core.'.md5(join('',$this->css['core'])).'.css','w');
 						fwrite($FILE,MinifyCSS::minify($files_content));
 						fclose($FILE);
 					endif;
@@ -671,7 +703,7 @@
 				);
 				# Added CSS.
 				if(count($this->css['added'])):
-					if(!is_file(BASE_PATH.'public/css/cached/hash.'.md5(join('',$this->css['added'])).'.css')):
+					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css')):
 						$files_content = NULL;
 						foreach($this->css['added'] as $css):
 							if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -682,14 +714,14 @@
 											'type' => 'text/css'
 										)
 								);
-							elseif(is_file(BASE_PATH.'public/css/'.$css)):
-								$FILE = fopen(BASE_PATH.'public/css/'.$css,'r');
-								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(BASE_PATH.'public/css/'.$css))."\n";
+							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
+								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
+								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen(BASE_PATH.'public/css/cached/hash.'.md5(join('',$this->css['added'])).'.css','w');
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css','w');
 							fwrite($FILE,MinifyCSS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -705,7 +737,7 @@
 
 				# Modular CSS.
 				if(count($this->css['modules'])):
-					if(!is_file(BASE_PATH.'public/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css')):
+					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css')):
 						$files_content = NULL;
 						foreach($this->css['modules'] as $css):
 							if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -716,14 +748,14 @@
 											'type' => 'text/css'
 										)
 								);
-							elseif(is_file(BASE_PATH.'public/css/'.$css)):
-								$FILE = fopen(BASE_PATH.'public/css/'.$css,'r');
-								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(BASE_PATH.'public/css/'.$css))."\n";
+							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
+								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
+								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen(BASE_PATH.'public/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css','w');
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css','w');
 							fwrite($FILE,MinifyCSS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -751,7 +783,7 @@
 				# Print CSS.
 				if($this->css['print']) foreach($this->css['print'] as $css) $files[] = $this->tag->link(
 								array(
-									'href' => '/css/'.$css,
+									'href' => $css,
 									'media' => 'print',
 									'rel' => 'stylesheet',
 									'type' => 'text/css'
@@ -759,7 +791,7 @@
 						);
 
 				# Core JS.
-				if(!is_file(BASE_PATH.'js/cached/core.'.md5(join('',$this->js['core'])).'.js')):
+				if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/core.'.md5(join('',$this->js['core'])).'.js')):
 					$files_content = NULL;
 					foreach($this->js['core'] as $js):
 						if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -769,14 +801,14 @@
 									'type' => 'text/javascript'
 									)
 							);
-						elseif(is_file(BASE_PATH.'js/'.$js)):
-							$FILE = fopen(BASE_PATH.'js/'.$js,'r');
-							$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(BASE_PATH.'js/'.$js))."\n";
+						elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
+							$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
 							fclose($FILE);
 						endif;
 					endforeach;
 					if(strlen($files_content) > 0):
-						$FILE = fopen(BASE_PATH.'js/cached/core.'.md5(join('',$this->js['core'])).'.js','w');
+						$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/core.'.md5(join('',$this->js['core'])).'.js','w');
 						fwrite($FILE,MinifyJS::minify($files_content));
 						fclose($FILE);
 					endif;
@@ -797,7 +829,7 @@
 
 				# Added JS.
 				if(count($this->js['added'])):
-					if(!is_file(BASE_PATH.'js/cached/hash.'.md5(join('',$this->js['added'])).'.js')):
+					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js')):
 						$files_content = NULL;
 						foreach($this->js['added'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -807,14 +839,14 @@
 										'type' => 'text/javascript'
 										)
 								);
-							elseif(is_file(BASE_PATH.'js/'.$js)):
-								$FILE = fopen(BASE_PATH.'js/'.$js,'r');
-								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(BASE_PATH.'js/'.$js))."\n";
+							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
+								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
+								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen(BASE_PATH.'js/cached/hash.'.md5(join('',$this->js['added'])).'.js','w');
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js','w');
 							fwrite($FILE,MinifyJS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -844,7 +876,7 @@
 
 				# Modular JS.
 				if(count($this->js['modules'])):
-					if(!is_file(BASE_PATH.'js/cached/modules.'.md5(join('',$this->js['modules'])).'.js')):
+					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js')):
 						$files_content = NULL;
 						foreach($this->js['modules'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -854,14 +886,14 @@
 										'type' => 'text/javascript'
 										)
 								);
-							elseif(is_file(BASE_PATH.'js/'.$js)):
-								$FILE = fopen(BASE_PATH.'js/'.$js,'r');
-								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(BASE_PATH.'js/'.$js))."\n";
+							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
+								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
+								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen(BASE_PATH.'js/cached/modules.'.md5(join('',$this->js['modules'])).'.js','w');
+							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js','w');
 							fwrite($FILE,MinifyJS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -875,7 +907,7 @@
 					endif;
 					$files[] = $this->tag->script(
 							NULL,array(
-							'src' => '/scripts/cached/modules.'.md5(join('',$this->js['modules'])).'.js',
+							'src' => '/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js',
 							'type' => 'text/javascript'
 							)
 					);
@@ -914,7 +946,7 @@
 				$this->tag->title(
 					(
 					$this->show['title']
-						?\PHY\Core::config('site/name').
+						?\PHY\Registry::get('config/site/name').
 						(
 						$this->title
 							?' - '
@@ -961,19 +993,14 @@
 		 * @return Markup_Abstract
 		 */
 		public function footer() {
-			if(is_file(BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/footer.phtml')):
-				ob_start();
-				include BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/footer.phtml';
-				$content = ob_get_contents();
-				ob_end_clean();
-				return $content;
-			else:
-				# <footer> tag that holds all this info.
-				$footer = $this->tag->header;
-				$footer->attributes(array('id' => 'footer'));
-				$footer->append('<!-- No footer was defined -->');
-				return $footer;
+			$content = $this->template('footer.phtml',true);
+			if(!$content):
+				$content = $this->tag->header;
+				$content->attributes(array('id' => 'header'));
+
+				$content->append('<!-- Footer was not defined -->');
 			endif;
+			return $content;
 		}
 
 		/**
@@ -982,20 +1009,14 @@
 		 * @return string|Markup_Abstract
 		 */
 		public function header() {
-			if(is_file(BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/header.phtml')):
-				ob_start();
-				include BASE_PATH.'phy/templates/'.\PHY\Core::config('site/template').'/header.phtml';
-				$content = ob_get_contents();
-				ob_end_clean();
-				return $content;
-			else:
-				# <header> tag that holds all this info.
-				$header = $this->tag->header;
-				$header->attributes(array('id' => 'header'));
+			$content = $this->template('header.phtml',true);
+			if(!$content):
+				$content = $this->tag->header;
+				$content->attributes(array('id' => 'header'));
 
-				$header->append('<!-- No header was defined -->');
-				return $header;
+				$content->append('<!-- Header was not defined -->');
 			endif;
+			return $content;
 		}
 
 		/**

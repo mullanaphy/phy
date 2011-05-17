@@ -18,7 +18,8 @@
 			require_once BASE_PATH.'/phy/constants/_required.php';
 
 			# Setting the XSRF cookie.
-			if(!isset($_COOKIE['xsrf_id'])) \PHY\Cookie::set('xsrf_id',md5(\PHY\String::random(16)),INT_YEAR);
+#			\PHY\Debug::dump($_COOKIE);
+			if(!isset($_COOKIE['_xsrf_id'])) \PHY\Cookie::set('_xsrf_id',md5(\PHY\String::random(16)),time()+INT_YEAR);
 
 			# Headers. Also note, HTML\PHP pages will also call session_start.
 			new \PHY\Headers;
@@ -39,6 +40,30 @@
 				die(ERROR_HTML);
 			elseif($_[0] > 10):
 				sleep(1);
+			endif;
+
+			# Register default SQL.
+			$database = \PHY\Registry::get('config/site/database')?:'mysql';
+			if(\PHY\Registry::config($database,true)):
+				$config = \PHY\Registry::get('config/'.$database.'/'.\PHY\Registry::theme());
+				$database = '\PHY\Extended\\'.$database;
+				$MySQL = new $database($config['host'],$config['username'],$config['password'],$config['table']);
+				\PHY\Registry::set('storage/db',$MySQL);
+			endif;
+
+			# Register default Cache.
+			if(\PHY\Registry::get('config/memcache',true)):
+				$Memcache = new \PHY\Extended\Memcache;
+				\PHY\Debug::dump(\PHY\Registry::get('config/memcache'));
+				foreach(\PHY\Registry::get('config/memcache') as $host):
+					if(strpos($host,':') !== false):
+						$host = explode(':',$host);
+						$Memcache->connect($host[0],$host[1]);
+					else:
+						$Memcache->connect($host,11211);
+					endif;
+				endforeach;
+				\PHY\Registry::set('storage/cache',$Memcache);
 			endif;
 
 			# Start timing page generation

@@ -15,8 +15,6 @@
 		const AUTHOR = 'John Mullanaphy';
 		const VERSION = 0.1;
 
-		static private $_configs = array();
-
 		/**
 		 *
 		 * @param string $Class
@@ -29,7 +27,6 @@
 
 			$namespace = array_shift($path);
 			if($namespace !== strtolower(__NAMESPACE__)):
-				throw new \Exception('Looking for '.__NAMESPACE__.' namespace. This must belong to someone else. #'.__LINE__);
 				return false;
 			endif;
 
@@ -39,16 +36,24 @@
 				$dir = '';
 				for($i = 0,$count = count($path); $i < $count; ++$i):
 					$dir .= '/'.$path[$i];
-					if(is_file(BASE_PATH.'phy/classes'.$dir.'/_interface.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_interface.php';
-					if(is_file(BASE_PATH.'phy/classes'.$dir.'/_abstract.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_abstract.php';
+					if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_interface.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_interface.php';
+					elseif(is_file(BASE_PATH.'phy/classes'.$dir.'/_interface.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_interface.php';
+					if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_abstract.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_abstract.php';
+					elseif(is_file(BASE_PATH.'phy/classes'.$dir.'/_abstract.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_abstract.php';
 				endfor;
 			endif;
 
 			$path = join('/',$path);
 
-			if(is_file(BASE_PATH.'phy/classes/'.$path.'/_interface.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_interface.php';
-			if(is_file(BASE_PATH.'phy/classes/'.$path.'/_abstract.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_abstract.php';
-			if(is_file(BASE_PATH.'phy/classes/'.$path.'/_class.php')):
+			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_interface.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_interface.php';
+			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_interface.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_interface.php';
+			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_abstract.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_abstract.php';
+			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_abstract.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_abstract.php';
+			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_class.php')):
+				require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_class.php';
+			elseif(file_exists($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'.php')):
+				require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'.php';
+			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_class.php')):
 				require_once BASE_PATH.'phy/classes/'.$path.'/_class.php';
 			elseif(file_exists(BASE_PATH.'phy/classes/'.$path.'.php')):
 				require_once BASE_PATH.'phy/classes/'.$path.'.php';
@@ -74,49 +79,6 @@
 				?new $Class
 				:new \stdClass;
 			return $Class;
-		}
-
-		/**
-		 * Read config values.
-		 *
-		 * @staticvar array $configs
-		 * @param string $key Path for the desired value.
-		 * @return mixed
-		 */
-		static public function config($key,$type='json') {
-			$values = explode('/',$key);
-			$config = array_shift($values);
-
-			# Grab the default values.
-			if(!isset(self::$_configs[$config])):
-				if(is_file(BASE_PATH.'phy/config/'.$config.'.'.$type)):
-					if($type === 'ini'):
-						self::$_configs[$config] = parse_ini_file(BASE_PATH.'phy/config/'.$config.'.ini');
-					else:
-						$FILE = fopen(BASE_PATH.'phy/config/'.$config.'.'.$type,'r');
-						$content = fread($FILE,filesize(BASE_PATH.'phy/config/'.$config.'.'.$type));
-						fclose($FILE);
-						$content = preg_replace(array('#//.+?\n#is','#/\*.+?\*/#is'),'',$content);
-						$content = json_decode($content);
-						if($content !== NULL) self::$_configs[$config] = \PHY\Convert::object_to_array($content);
-						else \PHY\Debug::error('Config "'.$config.'" empty or malformed.');
-					endif;
-				else:
-					\PHY\Debug::error('Config "'.$config.'" was not found.');
-					return;
-				endif;
-			endif;
-
-			if($values):
-				$temp = self::$_configs[$config];
-				foreach($values as $value):
-					if(!isset($temp[$value])) return;
-					elseif($temp) $temp = $temp[$value];
-				endforeach;
-				return $temp;
-			else:
-				return self::$_configs[$config];
-			endif;
 		}
 
 		/**

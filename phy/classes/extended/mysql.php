@@ -20,20 +20,15 @@
 		 * @param string $table
 		 */
 		public function __construct($host='localhost',$username=false,$password=false,$table='') {
-			if($username && $password):
-				parent::__construct($host,$username,$password,$table);
-			else:
-				$default = Constant::CONFIG('mysql/default');
-				parent::__construct($default['host'],$default['username'],$default['password'],$default['table']);
-			endif;
+			parent::__construct($host,$username,$password,$table);
 			if($this->connect_error):
 				header('HTTP/1.1 503 Service Unavailable');
-				die(ERROR_HTML);
 				die('Connection Error ('.$this->connect_errno.') '.$this->connect_error);
 			else:
 				self::$SERVERS[] = $this->host_info;
 				self::$SERVERS = array_unique(self::$SERVERS);
 			endif;
+			return $this;
 		}
 
 		/**
@@ -297,7 +292,7 @@
 			'SERVERS:      ',join("\n".'              ',self::$SERVERS),"\n",
 			'CALLS:        ',number_format(self::$COUNT),"\n",
 			'RUNTIME:      ',(round(microtime(true) - self::$DEBUG[0],5)),' seconds',"\n",
-			'MEMORY USAGE: ',String::bytes(memory_get_usage() - self::$DEBUG[1]),
+			'MEMORY USAGE: ',\PHY\String::bytes(memory_get_usage() - self::$DEBUG[1]),
 			'</pre>';
 			self::$SERVERS = array(array_shift(self::$SERVERS));
 			self::$DEBUG = false;
@@ -311,7 +306,7 @@
 			$debug = debug_backtrace();
 			$i = 1;
 			echo '<pre style="background:#eef;border:solid 1px #ccf;line-height:130%;margin:5px;font:12px \'courier new\';padding:5px;text-align:left;color:#008;">',
-			'<h2 style="border-bottom:solid 2px #ccf;color:#00f;font:bold 16px \'courier new\';margin:0 0 5px;padding:0;">SQL #',self::$COUNT,': ',str_replace(BASE_PATH,'/',$debug[$i]['file']),'" on line "',$debug[$i]['line'],'" - ',Debug::timer(),', server "',$this->host_info,'"</h2>',
+			'<h2 style="border-bottom:solid 2px #ccf;color:#00f;font:bold 16px \'courier new\';margin:0 0 5px;padding:0;">SQL #',self::$COUNT,': ',str_replace(BASE_PATH,'/',$debug[$i]['file']),'" on line "',$debug[$i]['line'],'" - ',\PHY\Debug::timer(),', server "',$this->host_info,'"</h2>',
 			trim(str_replace(array('<','>'),array('&lt;','&gt;'),preg_replace('/([\t]+)/is','',self::$LAST))),';',
 			'</pre>';
 		}
@@ -322,7 +317,7 @@
 		 * @param bool $show WARNING: If set to true it will show on live.
 		 */
 		public function show($show=false) {
-			if((\PHY\Core::config('site/production') && !\PHY\Registry::get('user/session')->admin) && $show !== true) return;
+			if((\PHY\Registry::get('config/site/production') && !\PHY\Registry::get('user/session')->admin) && $show !== true) return;
 			$debug = debug_backtrace();
 			$i = 0;
 			echo '<pre style="background:#fsee;border:solid 1px #fcc;color:#800;line-height:130%;margin:5px;font:bold 16px \'courier new\';padding:5px;text-align:left;">',

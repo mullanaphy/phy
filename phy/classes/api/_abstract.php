@@ -37,7 +37,7 @@
 		 */
 		final public function __call($function,$parameters) {
 			$response = $this->run($function,((!is_array($parameters))?$this->parameters:$parameters));
-			if(API::success($response)) return $response['status'] == 204?true:$response['response'];
+			if(\PHY\API::success($response)) return $response['status'] == 204?true:$response['response'];
 			else return false;
 		}
 

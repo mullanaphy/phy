@@ -31,7 +31,7 @@
 		public function instance() {
 			if(self::$_instance === NULL):
 				self::$_instance = new \PHY\Extended\Memcache;
-				$hosts = explode(';',\PHY\Core::config('memcache/host'));
+				$hosts = explode(';',\PHY\Core::config('memcache'));
 				foreach($hosts as $host):
 					if(strpos($host,':') !== false):
 						$host = explode(':',$host);

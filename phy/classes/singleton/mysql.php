@@ -35,10 +35,10 @@
 		 */
 		public function instance($host=NULL,$username=NULL,$password=NULL,$table=NULL) {
 			if($host === NULL):
-				$host = \PHY\Core::config('mysql/default/host');
-				$username = \PHY\Core::config('mysql/default/username');
-				$password = \PHY\Core::config('mysql/default/password');
-				$table = \PHY\Core::config('mysql/default/table');
+				$host = \PHY\Registry::get('config/mysql/default/host');
+				$username = \PHY\Registry::get('config/mysql/default/username');
+				$password = \PHY\Registry::get('config/mysql/default/password');
+				$table = \PHY\Registry::get('config/mysql/default/table');
 			endif;
 			$current = $username.'@'.$host.':'.$table;
 			if(!isset(self::$_instances[$current])):

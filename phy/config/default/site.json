@@ -1,0 +1,14 @@
+{
+	"production":false, // Set to true for live production sites.
+	"html":"HTML5", // Version of HTML to use.
+	"name":"My Site", // Site name.
+	"title":"Enjoy It!", // Page title.
+	"description":"My Site's Description", // Site description.
+	"keywords":["some","site","keywords"], // Site keywords.
+	"email":{
+		"default":"email@site.com", // Default email.
+		"support":"support@site.com",
+		"admin":"admin@site.com"
+	}
+//	"database":"mysql" // Uncomment this line for a different database.
+}

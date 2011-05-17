@@ -49,7 +49,7 @@
 				$Class = '\PHY\API\\'.$Class;
 				$this->API = new $Class($parameters);
 				if($this->API instanceof \PHY\API\_Abstract):
-					return true;
+						return true;
 				else:
 					$this->API = false;
 					$this->_response = array(
