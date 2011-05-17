@@ -71,7 +71,7 @@
 		 * @param type $Class 
 		 * @return Class
 		 */
-		static public function load($Class='',$graceful=fase) {
+		static public function load($Class='',$graceful=false) {
 			if(!is_string($Class) || !$Class) Debug::warning('Attempting to load an invalid Class Name',E_USER_WARNING);
 			$Class = strtolower(substr($Class,0,4)) === '\PHY\\'?
 				:'\PHY\\'.$Class;
