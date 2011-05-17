@@ -12,6 +12,8 @@
 	 * @static
 	 */
 	final class Core {
+		const AUTHOR = 'John Mullanaphy';
+		const VERSION = 0.1;
 
 		/**
 		 *
@@ -19,7 +21,7 @@
 		 * @static
 		 * @return bool
 		 */
-		static public function init($Class) {
+		static public function init($Class,$graceful=false) {
 			$Class = strtolower($Class);
 			$path = explode('\\',trim($Class,'\\'));
 
@@ -56,9 +58,11 @@
 			elseif(file_exists(BASE_PATH.'phy/classes/'.$path.'.php')):
 				require_once BASE_PATH.'phy/classes/'.$path.'.php';
 			elseif(!in_array($Class,array_map('strtolower',get_declared_classes()))):
-				\PHY\Debug::error('Could not find Class "'.$path.'". #'.__LINE__,E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('Could not find Class "'.$path.'". #'.__LINE__,E_USER_WARNING);
 				return false;
 			endif;
+
+			return true;
 		}
 
 		/**
@@ -67,7 +71,7 @@
 		 * @param type $Class 
 		 * @return Class
 		 */
-		static public function load($Class='') {
+		static public function load($Class='',$graceful=fase) {
 			if(!is_string($Class) || !$Class) Debug::warning('Attempting to load an invalid Class Name',E_USER_WARNING);
 			$Class = strtolower(substr($Class,0,4)) === '\PHY\\'?
 				:'\PHY\\'.$Class;
@@ -76,7 +80,7 @@
 			if($exists):
 				$Class = new $Class;
 			else:
-				\PHY\Debug::error('Could not load Class "'.$Class.'". #'.__LINE__,E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('Could not load Class "'.$Class.'". #'.__LINE__,E_USER_WARNING);
 				$Class = new \stdClass;
 			endif;
 			return $Class;
