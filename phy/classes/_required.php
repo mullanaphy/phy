@@ -12,8 +12,6 @@
 	 * @static
 	 */
 	final class Core {
-		const AUTHOR = 'John Mullanaphy';
-		const VERSION = 0.1;
 
 		/**
 		 *
@@ -75,9 +73,12 @@
 				:'\PHY\\'.$Class;
 			if(!class_exists($Class)) $exists = self::init($Class);
 			else $exists = true;
-			$Class = $exists
-				?new $Class
-				:new \stdClass;
+			if($exists):
+				$Class = new $Class;
+			else:
+				\PHY\Debug::error('Could not load Class "'.$Class.'". #'.__LINE__,E_USER_WARNING);
+				$Class = new \stdClass;
+			endif;
 			return $Class;
 		}
 
