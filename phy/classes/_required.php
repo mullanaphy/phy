@@ -75,7 +75,7 @@
 			if(!is_string($Class) || !$Class) Debug::warning('Attempting to load an invalid Class Name',E_USER_WARNING);
 			$Class = strtolower(substr($Class,0,4)) === '\PHY\\'?
 				:'\PHY\\'.$Class;
-			if(!class_exists($Class)) $exists = self::init($Class);
+			if(!class_exists($Class)) $exists = self::init($Class,$graceful);
 			else $exists = true;
 			if($exists):
 				$Class = new $Class;
