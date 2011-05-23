@@ -138,12 +138,18 @@
 
 		/**
 		 * Alias for API_*::run. Needed to Class API.
+		 * 
+		 * @param string $method
+		 * @param array $parameters Optional
+		 * @final
+		 * @return array array('status' => (int),'response' => (mixed));
 		 */
 		final public function api($method=NULL,array $parameters=array()) {
 			return $this->run($method,$parameters);
 		}
 
 		/**
+		 * Run a REST command.
 		 * 
 		 * @param string $method
 		 * @param array $parameters Optional
