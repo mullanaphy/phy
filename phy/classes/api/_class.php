@@ -189,7 +189,7 @@
 		 */
 		static public function login(array $parameters=array()) {
 			self::token($parameters);
-			if(self::$_credentials['id']) Cookie::generate('token_id',self::$_credentials['token_id'],NULL,'api.lafango.com');
+			if(self::$_credentials['id']) Cookie::generate('token_id',self::$_credentials['token_id']);
 		}
 
 		/**
