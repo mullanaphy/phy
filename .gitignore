@@ -3,3 +3,5 @@
 /js/global/
 /css/global/
 /nbproject/
+/phy/nbproject/private/
+.gitignore
