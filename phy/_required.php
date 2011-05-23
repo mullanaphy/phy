@@ -9,8 +9,9 @@
 			date_default_timezone_set('America/New_York');
 
 			# Define the BASE_PATH.
-			define('BASE_PATH',dirname(dirname(__FILE__)).'/');
-
+			if(!defined('BASE_PATH')) define('BASE_PATH',dirname(dirname(__FILE__)).'/');
+			if(!defined('ROOT_PATH')) define('ROOT_PATH',$_SERVER['DOCUMENT_ROOT']);
+			
 			# Class handler file. This is what controls the folder system.
 			require_once BASE_PATH.'/phy/classes/_required.php';
 

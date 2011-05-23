@@ -36,23 +36,23 @@
 				$dir = '';
 				for($i = 0,$count = count($path); $i < $count; ++$i):
 					$dir .= '/'.$path[$i];
-					if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_interface.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_interface.php';
+					if(is_file(ROOT_PATH.'/phy/classes'.$dir.'/_interface.php')) require_once ROOT_PATH.'/phy/classes'.$dir.'/_interface.php';
 					elseif(is_file(BASE_PATH.'phy/classes'.$dir.'/_interface.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_interface.php';
-					if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_abstract.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes'.$dir.'/_abstract.php';
+					if(is_file(ROOT_PATH.'/phy/classes'.$dir.'/_abstract.php')) require_once ROOT_PATH.'/phy/classes'.$dir.'/_abstract.php';
 					elseif(is_file(BASE_PATH.'phy/classes'.$dir.'/_abstract.php')) require_once BASE_PATH.'phy/classes'.$dir.'/_abstract.php';
 				endfor;
 			endif;
 
 			$path = join('/',$path);
 
-			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_interface.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_interface.php';
+			if(is_file(ROOT_PATH.'/phy/classes/'.$path.'/_interface.php')) require_once ROOT_PATH.'/phy/classes/'.$path.'/_interface.php';
 			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_interface.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_interface.php';
-			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_abstract.php')) require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_abstract.php';
+			if(is_file(ROOT_PATH.'/phy/classes/'.$path.'/_abstract.php')) require_once ROOT_PATH.'/phy/classes/'.$path.'/_abstract.php';
 			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_abstract.php')) require_once BASE_PATH.'phy/classes/'.$path.'/_abstract.php';
-			if(is_file($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_class.php')):
-				require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'/_class.php';
-			elseif(file_exists($_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'.php')):
-				require_once $_SERVER['DOCUMENT_ROOT'].'/phy/classes/'.$path.'.php';
+			if(is_file(ROOT_PATH.'/phy/classes/'.$path.'/_class.php')):
+				require_once ROOT_PATH.'/phy/classes/'.$path.'/_class.php';
+			elseif(file_exists(ROOT_PATH.'/phy/classes/'.$path.'.php')):
+				require_once ROOT_PATH.'/phy/classes/'.$path.'.php';
 			elseif(is_file(BASE_PATH.'phy/classes/'.$path.'/_class.php')):
 				require_once BASE_PATH.'phy/classes/'.$path.'/_class.php';
 			elseif(file_exists(BASE_PATH.'phy/classes/'.$path.'.php')):

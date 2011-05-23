@@ -500,7 +500,7 @@
 				return false;
 			else:
 				$file = false;
-				foreach(array($_SERVER['DOCUMENT_ROOT'].'/phy/templates/'.\PHY\Registry::theme().'/'.$source,$_SERVER['DOCUMENT_ROOT'].'/phy/templates/default/'.$source,BASE_PATH.'phy/templates/'.\PHY\Registry::theme().'/'.$source,BASE_PATH.'phy/templates/default/'.$source) as $check):
+				foreach(array(ROOT_PATH.'/phy/templates/'.\PHY\Registry::theme().'/'.$source,ROOT_PATH.'/phy/templates/default/'.$source,BASE_PATH.'phy/templates/'.\PHY\Registry::theme().'/'.$source,BASE_PATH.'phy/templates/default/'.$source) as $check):
 					if(is_file($check)):
 						$file = $check;
 						break;
@@ -671,7 +671,7 @@
 			# Live servers, we combine the files to make less requests per page.
 			elseif(!Headers::bot()):
 				# Core CSS.
-				if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/core.'.md5(join('',$this->css['core'])).'.css')):
+				if(!is_file(ROOT_PATH.'/css/cached/core.'.md5(join('',$this->css['core'])).'.css')):
 					$files_content = NULL;
 					foreach($this->css['core'] as $css):
 						if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -682,14 +682,14 @@
 										'type' => 'text/css'
 									)
 							);
-						elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
-							$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
+						elseif(is_file(ROOT_PATH.$css)):
+							$FILE = fopen(ROOT_PATH.$css,'r');
+							$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(ROOT_PATH.$css))."\n";
 							fclose($FILE);
 						endif;
 					endforeach;
 					if(strlen($files_content) > 0):
-						$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/core.'.md5(join('',$this->css['core'])).'.css','w');
+						$FILE = fopen(ROOT_PATH.'/css/cached/core.'.md5(join('',$this->css['core'])).'.css','w');
 						fwrite($FILE,MinifyCSS::minify($files_content));
 						fclose($FILE);
 					endif;
@@ -703,7 +703,7 @@
 				);
 				# Added CSS.
 				if(count($this->css['added'])):
-					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css')):
+					if(!is_file(ROOT_PATH.'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css')):
 						$files_content = NULL;
 						foreach($this->css['added'] as $css):
 							if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -714,14 +714,14 @@
 											'type' => 'text/css'
 										)
 								);
-							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
-								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
-								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
+							elseif(is_file(ROOT_PATH.$css)):
+								$FILE = fopen(ROOT_PATH.$css,'r');
+								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(ROOT_PATH.$css))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css','w');
+							$FILE = fopen(ROOT_PATH.'/css/cached/hash.'.md5(join('',$this->css['added'])).'.css','w');
 							fwrite($FILE,MinifyCSS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -737,7 +737,7 @@
 
 				# Modular CSS.
 				if(count($this->css['modules'])):
-					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css')):
+					if(!is_file(ROOT_PATH.'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css')):
 						$files_content = NULL;
 						foreach($this->css['modules'] as $css):
 							if(substr($css,0,7) === 'http://' || substr($css,0,8) === 'https://'):
@@ -748,14 +748,14 @@
 											'type' => 'text/css'
 										)
 								);
-							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$css)):
-								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$css,'r');
-								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$css))."\n";
+							elseif(is_file(ROOT_PATH.$css)):
+								$FILE = fopen(ROOT_PATH.$css,'r');
+								$files_content .= '/* '.$css.' */'."\n".fread($FILE,filesize(ROOT_PATH.$css))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css','w');
+							$FILE = fopen(ROOT_PATH.'/css/cached/modules.'.md5(join('',$this->css['modules'])).'.css','w');
 							fwrite($FILE,MinifyCSS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -791,7 +791,7 @@
 						);
 
 				# Core JS.
-				if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/core.'.md5(join('',$this->js['core'])).'.js')):
+				if(!is_file(ROOT_PATH.'/js/cached/core.'.md5(join('',$this->js['core'])).'.js')):
 					$files_content = NULL;
 					foreach($this->js['core'] as $js):
 						if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -801,14 +801,14 @@
 									'type' => 'text/javascript'
 									)
 							);
-						elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
-							$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
+						elseif(is_file(ROOT_PATH.$js)):
+							$FILE = fopen(ROOT_PATH.$js,'r');
+							$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(ROOT_PATH.$js))."\n";
 							fclose($FILE);
 						endif;
 					endforeach;
 					if(strlen($files_content) > 0):
-						$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/core.'.md5(join('',$this->js['core'])).'.js','w');
+						$FILE = fopen(ROOT_PATH.'/js/cached/core.'.md5(join('',$this->js['core'])).'.js','w');
 						fwrite($FILE,MinifyJS::minify($files_content));
 						fclose($FILE);
 					endif;
@@ -829,7 +829,7 @@
 
 				# Added JS.
 				if(count($this->js['added'])):
-					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js')):
+					if(!is_file(ROOT_PATH.'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js')):
 						$files_content = NULL;
 						foreach($this->js['added'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -839,14 +839,14 @@
 										'type' => 'text/javascript'
 										)
 								);
-							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
-								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
-								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
+							elseif(is_file(ROOT_PATH.$js)):
+								$FILE = fopen(ROOT_PATH.$js,'r');
+								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(ROOT_PATH.$js))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js','w');
+							$FILE = fopen(ROOT_PATH.'/js/cached/hash.'.md5(join('',$this->js['added'])).'.js','w');
 							fwrite($FILE,MinifyJS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -876,7 +876,7 @@
 
 				# Modular JS.
 				if(count($this->js['modules'])):
-					if(!is_file($_SERVER['DOCUMENT_ROOT'].'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js')):
+					if(!is_file(ROOT_PATH.'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js')):
 						$files_content = NULL;
 						foreach($this->js['modules'] as $js):
 							if(substr($js,0,7) === 'http://' || substr($js,0,8) === 'https://'):
@@ -886,14 +886,14 @@
 										'type' => 'text/javascript'
 										)
 								);
-							elseif(is_file($_SERVER['DOCUMENT_ROOT'].$js)):
-								$FILE = fopen($_SERVER['DOCUMENT_ROOT'].$js,'r');
-								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize($_SERVER['DOCUMENT_ROOT'].$js))."\n";
+							elseif(is_file(ROOT_PATH.$js)):
+								$FILE = fopen(ROOT_PATH.$js,'r');
+								$files_content .= '/* '.$js.' */'."\n".fread($FILE,filesize(ROOT_PATH.$js))."\n";
 								fclose($FILE);
 							endif;
 						endforeach;
 						if(strlen($files_content) > 0):
-							$FILE = fopen($_SERVER['DOCUMENT_ROOT'].'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js','w');
+							$FILE = fopen(ROOT_PATH.'/js/cached/modules.'.md5(join('',$this->js['modules'])).'.js','w');
 							fwrite($FILE,MinifyJS::minify($files_content));
 							fclose($FILE);
 						endif;
@@ -997,12 +997,12 @@
 		 */
 		public function footer() {
 			$content = $this->template('footer.phtml',true);
-			if(!$content):
-				$content = $this->tag->header;
-				$content->attributes(array('id' => 'header'));
+/*			if(!$content):
+				$content = $this->tag->footer;
+				$content->attributes(array('id' => 'footer'));
 
 				$content->append('<!-- Footer was not defined -->');
-			endif;
+			endif; */
 			return $content;
 		}
 
@@ -1013,12 +1013,12 @@
 		 */
 		public function header() {
 			$content = $this->template('header.phtml',true);
-			if(!$content):
+/*			if(!$content):
 				$content = $this->tag->header;
 				$content->attributes(array('id' => 'header'));
 
 				$content->append('<!-- Header was not defined -->');
-			endif;
+			endif; */
 			return $content;
 		}
 

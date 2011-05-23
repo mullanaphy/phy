@@ -126,7 +126,7 @@
 
 			if(!isset(self::$_configs[self::$_theme][$config])):
 				$file = false;
-				foreach(array($_SERVER['DOCUMENT_ROOT'].'/phy/config/'.self::$_theme.'/'.$config.'.json',$_SERVER['DOCUMENT_ROOT'].'/phy/config/default/'.$config.'.json',BASE_PATH.'phy/config/'.self::$_theme.'/'.$config.'.json',BASE_PATH.'phy/config/default/'.$config.'.json') as $check):
+				foreach(array(ROOT_PATH.'/phy/config/'.self::$_theme.'/'.$config.'.json',ROOT_PATH.'/phy/config/default/'.$config.'.json',BASE_PATH.'phy/config/'.self::$_theme.'/'.$config.'.json',BASE_PATH.'phy/config/default/'.$config.'.json') as $check):
 					if(is_file($check)):
 						$file = $check;
 						break;
@@ -163,7 +163,7 @@
 
 		static public function theme($theme=NULL) {
 			if($theme !== NULL):
-				if(is_dir($_SERVER['DOCUMENT_ROOT'].'/phy/config/'.$theme)) self::$_theme = $theme;
+				if(is_dir(ROOT_PATH.'/phy/config/'.$theme)) self::$_theme = $theme;
 				elseif(is_dir(BASE_PATH.'phy/config/'.$theme)) self::$_theme = $theme;
 				else self::$_theme = 'default';
 			endif;
