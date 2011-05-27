@@ -48,13 +48,13 @@
 		 */
 		static public function set($key=NULL,$value=NULL,$graceful=false) {
 			if(!is_string($key)):
-				if($graceful) \PHY\Debug::error('A registry key must be a string.',E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('A registry key must be a string.',E_USER_WARNING);
 				return false;
 			elseif(substr($key,0,6) === 'config'):
-				if($graceful) \PHY\Debug::error('A registry key cannot be declared in the config registry.',E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('A registry key cannot be declared in the config registry.',E_USER_WARNING);
 				return false;
 			elseif(isset(self::$_registry[$key])):
-				if($graceful) \PHY\Debug::error('A registry key already exists for "'.$key.'".',E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('A registry key already exists for "'.$key.'".',E_USER_WARNING);
 				return false;
 			else:
 				self::$_registry[$key] = $value;
