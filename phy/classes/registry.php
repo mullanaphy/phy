@@ -71,7 +71,7 @@
 		 */
 		static public function delete($key=NULL,$graceful=false) {
 			if(substr($key,0,6) === 'config'):
-				if($graceful) \PHY\Debug::error('Cannot delete the config registry.',E_USER_WARNING);
+				if(!$graceful) \PHY\Debug::error('Cannot delete the config registry.',E_USER_WARNING);
 				return false;
 			elseif(isset(self::$_registry[$key])):
 				unset(self::$_registry[$key]);
