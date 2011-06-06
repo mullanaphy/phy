@@ -9,8 +9,6 @@
 	 * @package API
 	 * @final
 	 * @author John Mullanaphy
-	 * @since 2010-07-13 2:15PM
-	 * @version 1.0
 	 */
 	final class API {
 

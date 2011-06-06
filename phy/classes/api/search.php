@@ -2,6 +2,13 @@
 
 	namespace PHY\API;
 
+	/**
+	 * Useing Sphinx for auto complete search boxes.
+	 * 
+	 * @category API
+	 * @package API\Sphinx
+	 * @author John Mullanaphy
+	 */
 	class Search extends \PHY\API\_Abstract {
 		const AUTHOR = 'John Mullanaphy';
 		const CREATED = '2010-09-30';

@@ -6,7 +6,7 @@
 	 * All API Classes must be able to handle RESTful methods.
 	 *
 	 * @category API
-	 * @package API_Abstract
+	 * @package API\_Abstract
 	 * @author John Mullanaphy
 	 */
 	abstract class _Abstract extends \ArrayObject {

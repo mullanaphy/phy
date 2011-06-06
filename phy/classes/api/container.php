@@ -2,10 +2,14 @@
 
 	namespace PHY\API;
 
+	/**
+	 * For calling locally defined containers via REST for AJAX inserts\updates.
+	 *
+	 * @category API
+	 * @package API\Container
+	 * @author John Mullanaphy
+	 */
 	class Container extends \PHY\API\_Abstract {
-		const AUTHOR = 'John Mullanaphy';
-		const CREATED = '2010-11-11';
-		const VERSION = '0.1.0';
 
 		public $tag = NULL;
 

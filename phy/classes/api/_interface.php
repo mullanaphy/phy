@@ -5,8 +5,8 @@
 	/**
 	 * Any API desiring class must implement API_Interface.
 	 *
-	 * @package API_Interface
 	 * @category API
+	 * @package API\_Interface
 	 * @author John Mullanaphy
 	 */
 	interface _Interface {

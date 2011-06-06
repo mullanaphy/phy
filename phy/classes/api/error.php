@@ -6,7 +6,7 @@
 	 * Logging API Based errors.
 	 *
 	 * @category API
-	 * @package API_Error
+	 * @package API\Error
 	 * @author John Mullanaphy
 	 * @final
 	 */
