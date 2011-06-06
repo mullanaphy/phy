@@ -8,11 +8,11 @@
 	 * @category API
 	 * @package API
 	 * @final
+	 * @author John Mullanaphy
+	 * @since 2010-07-13 2:15PM
+	 * @version 1.0
 	 */
 	final class API {
-		const AUTHOR = 'John Mullanaphy';
-		const CREATED = '2010-07-13 2:15PM';
-		const VERSION = '0.1.1';
 
 		private $API = NULL,
 		$_action = '',
@@ -49,7 +49,7 @@
 				$Class = '\PHY\API\\'.$Class;
 				$this->API = new $Class($parameters);
 				if($this->API instanceof \PHY\API\_Abstract):
-						return true;
+					return true;
 				else:
 					$this->API = false;
 					$this->_response = array(
