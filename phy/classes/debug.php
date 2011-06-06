@@ -1,7 +1,7 @@
 <?php
 
 	namespace PHY;
-	
+
 	/**
 	 * Debugger class.
 	 *
@@ -11,11 +11,24 @@
 	 * @final
 	 * @static
 	 */
-	
 	final class Debug {
 
 		static private $_throw = false,
 		$_count = 0;
+
+		/**
+		 * Class cannot be constructed.
+		 */
+		private function __construct() {
+			
+		}
+
+		/**
+		 * Class cannot be cloned.
+		 */
+		public function __clone() {
+			\PHY\Debug::error('Cannot clone the static class Debug.',E_USER_ERROR);
+		}
 
 		/**
 		 * Variable dump.

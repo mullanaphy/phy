@@ -1,7 +1,15 @@
 <?php
-	
+
 	namespace PHY\Image;
 
+	/**
+	 * Crop, convert, resize, and add watermarks to any image. Utilizes GD.
+	 *
+	 * @category Image
+	 * @package Image\Cropper
+	 * @author John Mullanaphy
+	 * @return Cropper
+	 */
 	final class Cropper {
 
 		private $source = NULL,
@@ -17,6 +25,17 @@
 
 #####	# Magic methods.
 
+		/**
+		 * Open up an image to manipulate.
+		 * 
+		 * @param string $source
+		 * @param string $path
+		 * @param array $coordinates
+		 * @param array $original_size
+		 * @param array $size
+		 * @param float $quality
+		 * @return Cropper 
+		 */
 		public function __construct($source=NULL,$path=NULL,$coordinates=array(0,0),$original_size=array(0,0),$size=array(194,194),$quality=100) {
 			$this->source = NULL;
 			if($source !== NULL):
@@ -38,6 +57,12 @@
 			return $this;
 		}
 
+		/**
+		 * Set the source of the image to be manipulated.
+		 * 
+		 * @param string $source
+		 * @return string|bool
+		 */
 		public function source($source=NULL) {
 			if($source !== NULL):
 				$file_type = strtolower(substr($source,strrpos($source,'.')));
@@ -54,6 +79,13 @@
 			endif;
 		}
 
+		/**
+		 * Define the original size to crop from.
+		 * 
+		 * @param int|array $x
+		 * @param int $y
+		 * @return array
+		 */
 		public function original_size($x,$y=false) {
 			if(is_array($x) && isset($x[0],$x[1])):
 				$y = $x[1];
@@ -63,6 +95,13 @@
 			return $this->original_size;
 		}
 
+		/**
+		 * Set the size of the image to be created.
+		 * 
+		 * @param int|array $x
+		 * @param int $y
+		 * @return array
+		 */
 		public function size($x,$y=0) {
 			if(is_array($x) && isset($x[0],$x[1])):
 				$y = $x[1];
@@ -73,6 +112,13 @@
 			return $this->size;
 		}
 
+		/**
+		 * Set the coordinates to start a crop from.
+		 * 
+		 * @param int|array $x
+		 * @param int $y
+		 * @return array
+		 */
 		public function coordinates($x=0,$y=0) {
 			if(is_array($x) && isset($x[0],$x[1])):
 				$y = $x[1];
@@ -82,16 +128,36 @@
 			return $this->coordinates;
 		}
 
+		/**
+		 * Define the path where the new image will be created.
+		 *
+		 * @param string $path
+		 * @return string
+		 */
 		public function path($path='') {
 			$this->path = $path;
 			return $this->path;
 		}
 
+		/**
+		 * Set the image quality. For saving a JPG only.
+		 * 
+		 * @param float $quality
+		 * @return float 
+		 */
 		public function quality($quality=.9) {
 			$this->quality = $quality;
 			return $this->quality;
 		}
 
+		/**
+		 * Set a watermark to use.
+		 * 
+		 * @param string $watermark
+		 * @param int $percentage
+		 * @param float $size
+		 * @return string
+		 */
 		public function watermark($watermark=false,$percentage=100,$size=.75) {
 			if($size > 1) $size /= 100;
 			$this->watermark = $watermark;
@@ -100,12 +166,13 @@
 			return $this->watermark;
 		}
 
-		# Deprecated
-
-		public function save($destination,$source=false) {
-			$this->generate($destination,$source);
-		}
-
+		/**
+		 * Generate the new image.
+		 * 
+		 * @param string $destination
+		 * @param string $source
+		 * @return resource
+		 */
 		public function generate($destination,$source=false) {
 			if($source):
 				$file_type = strtolower(substr($source,strrpos($source,'.')));
@@ -155,6 +222,21 @@
 			endif;
 		}
 
+		/**
+		 * Sets alpha channel for images.
+		 * 
+		 * @access private
+		 * @ignore
+		 * @param string $destination
+		 * @param string $source
+		 * @param int $destination_x
+		 * @param int $destination_y
+		 * @param int $source_x
+		 * @param int $source_y
+		 * @param int $source_w
+		 * @param int $source_h
+		 * @param int $percentage
+		 */
 		private static function _alpha($destination,$source,$destination_x,$destination_y,$source_x,$source_y,$source_w,$source_h,$percentage) {
 			if(!isset($percentage)) return false;
 			$percentage /= 100;

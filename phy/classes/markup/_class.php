@@ -4,7 +4,7 @@
 
 	/**
 	 * Markup Factory so you only have to call $Markup = new Markup; or
-	 * $Markup = Markup::tag(); instead of needing to worry about what version
+	 * $Markup = Markup::instance(); instead of needing to worry about what version
 	 * to use.
 	 *
 	 * @category Markup
@@ -56,7 +56,7 @@
 		 *
 		 * <code>
 		 * <?php
-		 *    $instance = Markup::tag();
+		 *    $instance = Markup::instance();
 		 *    var_dump($instance); // Returns a Markup_Abstract object.
 		 * </code>
 		 *

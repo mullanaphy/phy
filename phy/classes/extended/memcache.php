@@ -11,7 +11,7 @@
 	 * Extended to add some debugging methods.
 	 *
 	 * @category Extended
-	 * @package Extended_Memcache
+	 * @package Extended\Memcache
 	 * @author John Mullanaphy
 	 */
 	class Memcache extends \Memcache {

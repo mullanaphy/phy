@@ -6,7 +6,7 @@
 	 * Work with only HTML5 tags and attributes.
 	 *
 	 * @category Markup
-	 * @package Markup_HTML5
+	 * @package Markup\HTML5
 	 * @author John Mullanaphy
 	 */
 	class HTML5 extends \PHY\Markup\_Abstract {

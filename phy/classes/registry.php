@@ -2,6 +2,17 @@
 
 	namespace PHY;
 
+	/**
+	 * Registry for storing all important and\or global key => values.
+	 * 
+	 * Registry::get('config/*'); works slightly different then the rest.
+	 * 
+	 * @category Registry
+	 * @package Registry
+	 * @author John Mullanaphy
+	 * @final
+	 * @static
+	 */
 	final class Registry {
 
 		static private $_configs = array(),
@@ -9,17 +20,17 @@
 		$_theme = 'default';
 
 		/**
-		 * Registry cannot be initiated.
+		 * Class cannot be constructed.
 		 */
 		private function __construct() {
 			
 		}
 
 		/**
-		 * Registry cannot be cloned.
+		 * Class cannot be cloned.
 		 */
 		public function __clone() {
-			\PHY\Debug::error('Registry cannot be cloned.',E_USER_ERROR);
+			\PHY\Debug::error('Cannot clone the static class Registry.',E_USER_ERROR);
 		}
 
 		/**
@@ -31,9 +42,7 @@
 		static public function get($key=NULL,$graceful=false) {
 			if(is_string($key)):
 				if(substr($key,0,7) === 'config/') return self::config(str_replace('config/','',$key),$graceful);
-				else return isset(self::$_registry[$key])
-						?self::$_registry[$key]
-						:NULL;
+				else return isset(self::$_registry[$key])?self::$_registry[$key]:NULL;
 			endif;
 		}
 

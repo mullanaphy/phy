@@ -2,8 +2,13 @@
 
 	namespace PHY;
 
-# sphinx searchd client class
-
+	/**
+	 * Sphinx class ported over to PHP5.3+
+	 * 
+	 * @category Sphinx
+	 * @package Sphinx
+	 * @author Sphinx\John Mullanaphy
+	 */
 	class Sphinx {
 #####	# Constants.
 		const SEARCHD_COMMAND_SEARCH = 0;
@@ -35,12 +40,12 @@
 		const MATCH_BOOLEAN = 3;
 		const MATCH_EXTENDED = 4;
 		const MATCH_FULLSCAN = 5;
-		const MATCH_EXTENDED2 = 6;	# extended engine V2(TEMPORARY, WILL BE REMOVED)
+		const MATCH_EXTENDED2 = 6; # extended engine V2(TEMPORARY, WILL BE REMOVED)
 		# known ranking modes(ext2 only)
 		const RANK_PROXIMITY_BM25 = 0;   # default mode, phrase proximity major factor and BM25 minor one
-		const RANK_BM25 = 1;	 # statistical mode, BM25 ranking only(faster but worse quality)
-		const RANK_NONE = 2;	 # no ranking, all matches get a weight of 1
-		const RANK_WORDCOUNT = 3;	# simple word-count weighting, rank is a weighted sum of per-field keyword occurence counts
+		const RANK_BM25 = 1;  # statistical mode, BM25 ranking only(faster but worse quality)
+		const RANK_NONE = 2;  # no ranking, all matches get a weight of 1
+		const RANK_WORDCOUNT = 3; # simple word-count weighting, rank is a weighted sum of per-field keyword occurence counts
 		const RANK_PROXIMITY = 4;
 		const RANK_MATCHANY = 5;
 		const RANK_FIELDMASK = 6;
@@ -74,8 +79,6 @@
 		const GROUPBY_YEAR = 3;
 		const GROUPBY_ATTR = 4;
 		const GROUPBY_ATTRPAIR = 5;
-
-#####	# Variables.
 
 		private $_host = 'localhost',# searchd host(default is "localhost")
 		$_port = 9312,# searchd port(default is 9312)
@@ -113,36 +116,53 @@
 		$_reqs = array(),# requests array for multi-query
 		$_mbenc = '',# stored mbstring encoding
 		$_arrayresult = false,# whether $result["matches"] should be a hash or an array
-		$_timeout = 0;	   # connect timeout
+		$_timeout = 0; # connect timeout
 
-#####	# Magic methods.		
+		/**
+		 * Closes socket on __destruct.
+		 * 
+		 * You will need to call __destruct before unsetting Sphinx in certain 
+		 * cases.
+		 */
 
 		public function __destruct() {
 			if($this->_socket !== false) fclose($this->_socket);
 		}
 
-#####	# Get methods.
-		# get last error message(string)
-
+		/**
+		 * Get last error message.
+		 * 
+		 * @return string
+		 */
 		public function getLastError() {
 			return $this->_error;
 		}
 
-		# get last warning message(string)
-
+		/**
+		 * Get last warning message.
+		 * 
+		 * @return string
+		 */
 		public function getLastWarning() {
 			return $this->_warning;
 		}
 
-		# get last error flag(to tell network connection errors from searchd errors or broken responses)
-
+		/**
+		 * Get last error flag (to tell network connection errors from searchd 
+		 * errors or broken responses).
+		 * 
+		 * @return int
+		 */
 		public function isConnectError() {
 			return $this->_connerror;
 		}
 
-#####	# Set methods.
-		# set searchd host name(string) and port(integer)
-
+		/**
+		 * Set searchd host name and port.
+		 * 
+		 * @param string $host
+		 * @param int $port
+		 */
 		public function setServer($host,$port=0) {
 			assert(is_string($host));
 			if($host[0] === '/'):
@@ -158,16 +178,25 @@
 			$this->_path = '';
 		}
 
-		# set server connection timeout(0 to remove)
-
+		/**
+		 * Set server connection timeout.
+		 * 
+		 * @param int $timeout 0 for no timeout.
+		 */
 		public function setConnectTimeout($timeout) {
 			assert(is_numeric($timeout));
 			$this->_timeout = $timeout;
 		}
 
-		# set offset and count into result set,
-		# and optionally set max-matches and cutoff limits
-
+		/**
+		 * Set offset and count into result set, and optionally set max-matches 
+		 * and cutoff limits.
+		 * 
+		 * @param int $offset
+		 * @param int $limit
+		 * @param int $max
+		 * @param int $cutoff
+		 */
 		public function setLimits($offset,$limit,$max=0,$cutoff=0) {
 			assert(is_int($offset));
 			assert(is_int($limit));
@@ -180,17 +209,22 @@
 			if($cutoff > 0) $this->_cutoff = $cutoff;
 		}
 
-		# set maximum query time, in milliseconds, per-index
-		# integer, 0 means "do not limit"
-
+		/**
+		 * Set maximum query time, in milliseconds, per-index integer.
+		 * 
+		 * @param int $max 0 for no limit.
+		 */
 		public function setMaxQueryTime($max) {
 			assert(is_int($max));
 			assert($max >= 0);
 			$this->_maxquerytime = $max;
 		}
 
-		# set matching mode
-
+		/**
+		 * Set matching mode.
+		 * 
+		 * @param int $mode
+		 */
 		public function setMatchMode($mode) {
 			assert($mode == self::MATCH_ALL
 				|| $mode == self::MATCH_ANY
@@ -202,8 +236,11 @@
 			$this->_mode = $mode;
 		}
 
-		# set ranking mode
-
+		/**
+		 * Set ranking mode.
+		 * 
+		 * @param int $ranker
+		 */
 		public function setRankingMode($ranker) {
 			assert($ranker == self::RANK_PROXIMITY_BM25
 				|| $ranker == self::RANK_BM25
@@ -213,8 +250,12 @@
 			$this->_ranker = $ranker;
 		}
 
-		# set matches sorting mode
-
+		/**
+		 * set matches sorting mode
+		 * 
+		 * @param int $mode
+		 * @param string $sortby
+		 */
 		public function setSortMode($mode,$sortby='') {
 			assert(
 				$mode == self::SORT_RELEVANCE ||
@@ -229,17 +270,23 @@
 			$this->_sortby = $sortby;
 		}
 
-		# bind per-field weights by order
-		# DEPRECATED; use SetFieldWeights() instead
-
+		/**
+		 * Bind per-field weights by order.
+		 *
+		 * @param array $weights
+		 * @deprecated use SetFieldWeights() instead
+		 */
 		public function setWeights($weights) {
 			assert(is_array($weights));
 			foreach($weights as $weight) assert(is_int($weight));
 			$this->_weights = $weights;
 		}
 
-		# bind per-field weights by name
-
+		/**
+		 * Bind per-field weights by name.
+		 * 
+		 * @param array $weights
+		 */
 		public function setFieldWeights($weights) {
 			assert(is_array($weights));
 			foreach($weights as $name => $weight):
@@ -249,8 +296,11 @@
 			$this->_fieldweights = $weights;
 		}
 
-		# bind per-index weights by name
-
+		/**
+		 * Bind per-index weights by name.
+		 * 
+		 * @param array $weights
+		 */
 		public function setIndexWeights($weights) {
 			assert(is_array($weights));
 			foreach($weights as $index => $weight):
@@ -260,9 +310,13 @@
 			$this->_indexweights = $weights;
 		}
 
-		# set IDs range to match
-		# only match records if document ID is beetwen $min and $max(inclusive)
-
+		/**
+		 * Set IDs range to match only match records if document ID is between 
+		 * $min and $max (inclusive)
+		 * 
+		 * @param int $min
+		 * @param int $max
+		 */
 		public function setIDRange($min,$max) {
 			assert(is_numeric($min));
 			assert(is_numeric($max));
@@ -271,9 +325,14 @@
 			$this->_max_id = $max;
 		}
 
-		# set values set filter
-		# only match records where $attribute value is in given set
-
+		/**
+		 * Set values set filter only match records where $attribute value is in 
+		 * given set.
+		 *
+		 * @param string $attribute
+		 * @param array $values
+		 * @param bool $exclude 
+		 */
 		public function setFilter($attribute,$values,$exclude=false) {
 			assert(is_string($attribute));
 			assert(is_array($values));
@@ -289,9 +348,15 @@
 			endif;
 		}
 
-		# set range filter
-		# only match records if $attribute value is beetwen $min and $max(inclusive)
-
+		/**
+		 * Set range filter only match records if $attribute value is between 
+		 * $min and $max (inclusive).
+		 * 
+		 * @param string $attribute
+		 * @param int $min
+		 * @param int $max
+		 * @param bool $exclude 
+		 */
 		public function setFilterRange($attribute,$min,$max,$exclude=false) {
 			assert(is_string($attribute));
 			assert(is_numeric($min));
@@ -306,9 +371,15 @@
 			);
 		}
 
-		# set float range filter
-		# only match records if $attribute value is beetwen $min and $max(inclusive)
-
+		/**
+		 * Set float range filter only match records if $attribute value is 
+		 * between $min and $max (inclusive).
+		 * 
+		 * @param string $attribute
+		 * @param float $min
+		 * @param float $max
+		 * @param bool $exclude 
+		 */
 		public function setFilterFloatRange($attribute,$min,$max,$exclude=false) {
 			assert(is_string($attribute));
 			assert(is_float($min));
@@ -323,10 +394,16 @@
 			);
 		}
 
-		# setup anchor point for geosphere distance calculations
-		# required to use @geodist in filters and sorting
-		# latitude and longitude must be in radians
-
+		/**
+		 * Setup anchor point for geosphere distance calculations required to 
+		 * use @geodist in filters and sorting latitude and longitude must be in
+		 * radians.
+		 *
+		 * @param string $attrlat
+		 * @param string $attrlong
+		 * @param float $lat
+		 * @param float $long 
+		 */
 		public function setGeoAnchor($attrlat,$attrlong,$lat,$long) {
 			assert(is_string($attrlat));
 			assert(is_string($attrlong));
@@ -340,8 +417,13 @@
 			);
 		}
 
-		# set grouping attribute and function
-
+		/**
+		 * Set grouping attribute and function.
+		 * 
+		 * @param string $attribute
+		 * @param int $func
+		 * @param string $groupsort 
+		 */
 		public function setGroupBy($attribute,$func,$groupsort='@group desc') {
 			assert(is_string($attribute));
 			assert(is_string($groupsort));
@@ -356,15 +438,22 @@
 			$this->_groupsort = $groupsort;
 		}
 
-		# set count-distinct attribute for group-by queries
-
+		/**
+		 * Set count-distinct attribute for group-by queries.
+		 * 
+		 * @param string $attribute 
+		 */
 		public function setGroupDistinct($attribute) {
 			assert(is_string($attribute));
 			$this->_groupdistinct = $attribute;
 		}
 
-		# set distributed retries count and delay
-
+		/**
+		 * Set distributed retries count and delay.
+		 * 
+		 * @param int $count
+		 * @param int $delay 
+		 */
 		public function setRetries($count,$delay=0) {
 			assert(is_int($count) && $count >= 0);
 			assert(is_int($delay) && $delay >= 0);
@@ -372,18 +461,26 @@
 			$this->_retrydelay = $delay;
 		}
 
-		# set result set format(hash or array; hash by default)
-		# PHP specific; needed for group-by-MVA result sets that may contain duplicate IDs
-
+		/**
+		 * Set result set format (hash or array; hash by default) PHP specific;
+		 * needed for group-by-MVA result sets that may contain duplicate IDs.
+		 * 
+		 * @param bool $arrayresult 
+		 */
 		public function setArrayResult($arrayresult) {
 			assert(is_bool($arrayresult));
 			$this->_arrayresult = $arrayresult;
 		}
 
-		# set attribute values override
-		# there can be only one override per attribute
-		# $values must be a hash that maps document IDs to attribute values
-
+		/**
+		 * Set attribute values override there can be only one override per
+		 * attribute $values must be a hash that maps document IDs to attribute
+		 * values.
+		 * 
+		 * @param string $attrname
+		 * @param array $attrtype
+		 * @param array $values
+		 */
 		public function setOverride($attrname,$attrtype,$values) {
 			assert(is_string($attrname));
 			assert(in_array($attrtype,array(self::ATTR_INTEGER,self::ATTR_TIMESTAMP,self::ATTR_BOOL,self::ATTR_FLOAT,self::ATTR_BIGINT)));
@@ -395,23 +492,27 @@
 			);
 		}
 
-		# set select-list(attributes or expressions), SQL-like syntax
-
+		/**
+		 * Set select-list (attributes or expressions), SQL-like syntax.
+		 * 
+		 * @param type $select 
+		 */
 		public function setSelect($select) {
 			assert(is_string($select));
 			$this->_select = $select;
 		}
 
-#####	# Reset methods.	
-		# clear all filters(for multi-queries)
-
+		/**
+		 * Clear all filters (for multi-queries).
+		 */
 		public function resetFilters() {
 			$this->_filters = array();
 			$this->_anchor = array();
 		}
 
-		# clear groupby settings(for multi-queries)
-
+		/**
+		 * Clear groupby settings (for multi-queries).
+		 */
 		public function resetGroupBy() {
 			$this->_groupby = '';
 			$this->_groupfunc = self::GROUPBY_DAY;
@@ -419,16 +520,22 @@
 			$this->_groupdistinct = '';
 		}
 
-		# clear all attribute value overrides(for multi-queries)
-
-		public function ResetOverrides() {
+		/**
+		 * Clear all attribute value overrides (for multi-queries).
+		 */
+		public function resetOverrides() {
 			$this->_overrides = array();
 		}
 
-#####	# Methods for generating and retrieving results.
-		# connect to searchd server, run given search query through given indexes,
-		# and return the search results
-
+		/**
+		 * Connect to searchd server, run given search query through given 
+		 * indexes, and return the search results.
+		 * 
+		 * @param string $query
+		 * @param string $index
+		 * @param string $comment
+		 * @return array
+		 */
 		public function query($query,$index='*',$comment='') {
 			assert(empty($this->_reqs));
 
@@ -444,9 +551,15 @@
 			else return $results[0];
 		}
 
-		# add query to multi-query batch
-		# returns index into results array from RunQueries() call
-
+		/**
+		 * Add query to multi-query batch returns index into results array from 
+		 * RunQueries() call.
+		 * 
+		 * @param string $query
+		 * @param string $index
+		 * @param string $comment
+		 * @return int
+		 */
 		public function addQuery($query,$index='*',$comment='') {
 			# mbstring workaround
 			$this->_mbstringPush();
@@ -550,7 +663,12 @@
 			return count($this->_reqs) - 1;
 		}
 
-		/// connect to searchd, run queries batch, and return an array of result sets
+		/**
+		 * Connect to searchd, run queries batch, and return an array of result 
+		 * sets.
+		 * 
+		 * @return array
+		 */
 		public function runQueries() {
 			if(empty($this->_reqs)) {
 				$this->_error = "no queries defined, issue AddQuery() first";
@@ -584,8 +702,16 @@
 			return $this->_parseSearchResponse($response,$nreqs);
 		}
 
-#####	# Private methods.
-
+		/**
+		 * Send a call to searchd.
+		 * 
+		 * @access private
+		 * @ignore
+		 * @param resource $handle
+		 * @param string $data
+		 * @param int $length
+		 * @return bool
+		 */
 		private function _send($handle,$data,$length) {
 			if(feof($handle) || fwrite($handle,$data,$length) !== $length):
 				$this->_error = 'connection unexpectedly closed(timed out?)';
@@ -596,8 +722,12 @@
 			endif;
 		}
 
-		# enter mbstring workaround mode.
-
+		/**
+		 * Enter mbstring workaround mode.
+		 * 
+		 * @access private
+		 * @ignore
+		 */
 		private function _mbstringPush() {
 			$this->_mbenc = '';
 			if(ini_get("mbstring.func_overload") & 2):
@@ -606,14 +736,23 @@
 			endif;
 		}
 
-		# leave mbstring workaround mode
-
+		/**
+		 * Leave mbstring workaround mode.
+		 * 
+		 * @access private
+		 * @ignore
+		 */
 		private function _mbstringPop() {
 			if($this->_mbenc) mb_internal_encoding($this->_mbenc);
 		}
 
-		# connect to searchd server
-
+		/**
+		 * Connect to searchd server.
+		 * 
+		 * @access private
+		 * @ignore
+		 * @return resource
+		 */
 		private function _connect() {
 			if($this->_socket !== false):
 				# we are in persistent connection mode, so we have a socket
@@ -671,8 +810,15 @@
 			return $fp;
 		}
 
-		# get and check response packet from searchd server
-
+		/**
+		 * Get and check response packet from searchd server.
+		 * 
+		 * @access private
+		 * @ignore
+		 * @param type $fp
+		 * @param type $client_ver
+		 * @return type 
+		 */
 		private function _getResponse($fp,$client_ver) {
 			$response = '';
 			$len = 0;
@@ -724,16 +870,29 @@
 			return $response;
 		}
 
-		# helper to pack floats in network byte order
-
+		/**
+		 * Helper to pack floats in network byte order.
+		 *
+		 * @access private
+		 * @ignore
+		 * @param float $f
+		 * @return string 
+		 */
 		private function _packFloat($f) {
 			$t1 = pack('f',$f); # machine order
 			list(,$t2) = unpack('L*',$t1); # int in machine order
 			return pack('N',$t2);
 		}
 
-		# parse and return search query(or queries) response
-
+		/**
+		 * Parse and return search query(or queries) response.
+		 * 
+		 * @access private
+		 * @ignore
+		 * @param string $response
+		 * @param int $nreqs
+		 * @return array 
+		 */
 		private function _parseSearchResponse($response,$nreqs) {
 			$p = 0; # current position
 			$max = strlen($response); # max position for checks, to protect against broken responses
@@ -884,11 +1043,17 @@
 			return $results;
 		}
 
-#####	# Building methods.
-		# connect to searchd server, and generate exceprts(snippets)
-		# of given documents for given query. returns false on failure,
-		# an array of snippets on success
-
+		/**
+		 * connect to searchd server, and generate exceprts(snippets)
+		 * of given documents for given query. returns false on failure,
+		 * an array of snippets on success
+		 * 
+		 * @param array $docs
+		 * @param string $index
+		 * @param string $words
+		 * @param array $opts
+		 * @return array 
+		 */
 		public function buildExcerpts($docs,$index,$words,$opts=array()) {
 			assert(is_array($docs));
 			assert(is_string($index));
@@ -966,10 +1131,15 @@
 			return $res;
 		}
 
-		# connect to searchd server, and generate keyword list for a given query
-		# returns false on failure,
-		# an array of words on success
-
+		/**
+		 * Connect to searchd server, and generate keyword list for a given query
+		 * returns false on failure, an array of words on success.
+		 * 
+		 * @param string $query
+		 * @param string $index
+		 * @param bool $hits
+		 * @return array 
+		 */
 		public function buildKeywords($query,$index,$hits) {
 			assert(is_string($query));
 			assert(is_string($index));
@@ -1032,15 +1202,30 @@
 			return $res;
 		}
 
+		/**
+		 * Escapes a string.
+		 * 
+		 * @staticvar array $from
+		 * @staticvar array $to
+		 * @param string $string
+		 * @return string 
+		 */
 		public function escapeString($string) {
 			static $from = array('\\','(',')','|','-','!','@','~','"','&','/','^','$','=');
 			static $to = array('\\\\','\(','\)','\|','\-','\!','\@','\~','\"','\&','\/','\^','\$','\=');
 			return str_replace($from,$to,$string);
 		}
 
-		# batch update given attributes in given rows in given indexes
-		# returns amount of updated documents(0 or more) on success, or -1 on failure
-
+		/**
+		 * Batch update given attributes in given rows in given indexes returns 
+		 * amount of updated documents(0 or more) on success, or -1 on failure.
+		 *
+		 * @param sting $index
+		 * @param array $attrs
+		 * @param array $values
+		 * @param bool $mva
+		 * @return type 
+		 */
 		function updateAttributes($index,$attrs,$values,$mva=false) {
 			# verify everything
 			assert(is_string($index));
@@ -1094,9 +1279,11 @@
 			return $updated;
 		}
 
-#####	# Connection methods.
-		# persistent connections
-
+		/**
+		 * Opens a persistent connection if we can.
+		 * 
+		 * @return bool
+		 */
 		public function open() {
 			if($this->_socket !== false):
 				$this->_error = 'already connected';
@@ -1113,8 +1300,11 @@
 			return true;
 		}
 
-		# close connection.
-
+		/**
+		 * Closs the connection if we can.
+		 * 
+		 * @return bool
+		 */
 		public function close() {
 			if($this->_socket === false):
 				$this->_error = 'not connected';
@@ -1127,8 +1317,11 @@
 			return true;
 		}
 
-		# status
-
+		/**
+		 * Returns the current status.
+		 * 
+		 * @return array
+		 */
 		public function status() {
 			$this->_mbstringPush();
 			if(!($fp = $this->_connect())):
@@ -1161,8 +1354,10 @@
 			return $res;
 		}
 
-#####	# Helper methods.
-
+		/**
+		 * @access private
+		 * @ignore
+		 */
 		private function packI64($v) {
 			assert(is_numeric($v));
 
@@ -1204,8 +1399,10 @@
 			return pack('NN',$h,$l);
 		}
 
-		# pack 64-bit unsigned
-
+		/**
+		 * @access private
+		 * @ignore
+		 */
 		private function packU64($v) {
 			assert(is_numeric($v));
 
@@ -1259,8 +1456,10 @@
 			return pack('NN',$h,$l);
 		}
 
-		# unpack 64-bit unsigned
-
+		/**
+		 * @access private
+		 * @ignore
+		 */
 		private function unpackU64($v) {
 			list($hi,$lo) = array_values(unpack('N*N*',$v));
 
@@ -1315,8 +1514,10 @@
 			return $h.$l;
 		}
 
-		# unpack 64-bit signed
-
+		/**
+		 * @access private
+		 * @ignore
+		 */
 		private function unpackI64($v) {
 			list($hi,$lo) = array_values(unpack('N*N*',$v));
 
@@ -1374,6 +1575,10 @@
 			return $neg.$h.$l;
 		}
 
+		/**
+		 * @access private
+		 * @ignore
+		 */
 		private function fixUint($value) {
 			if(PHP_INT_SIZE >= 8):
 				# x64 route, workaround broken unpack() in 5.2.2+

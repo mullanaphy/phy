@@ -2,6 +2,15 @@
 
 	namespace PHY;
 
+	/**
+	 * You can use this to set up a Singleton if you don't want to use the
+	 * Registry for whatever reason. Up to you really although I'd suggest using
+	 * the Registry instead.
+	 * 
+	 * @category Singleton
+	 * @package Singleton
+	 * @author John Mullanaphy
+	 */
 	final class Singleton {
 
 		private static $_instances = array();

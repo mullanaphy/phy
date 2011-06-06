@@ -2,18 +2,35 @@
 
 	namespace PHY;
 
+	/**
+	 * Static class for both cookie getting and setting.
+	 * 
+	 * @category Cookie
+	 * @package Cookie
+	 * @author John Mullanaphy
+	 * @final
+	 * @static
+	 */
 	final class Cookie {
 
+		/**
+		 * Class cannot be constructed.
+		 */
 		private function __construct() {
 			
 		}
 
+		/**
+		 * Class cannot be cloned.
+		 */
 		public function __clone() {
 			\PHY\Debug::error('Cannot clone the static class Cookie.',E_USER_ERROR);
 		}
 
 		/**
-		 *
+		 * Set a cookie to be defined as long as it is properly formed and headers
+		 * haven't been sent yet.
+		 * 
 		 * @param mixed $key If an array is sent then cookies will be set key => value.
 		 * @param mixed $value
 		 * @param int $expires

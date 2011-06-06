@@ -3,7 +3,11 @@
 	namespace PHY\Singleton;
 
 	/**
-	 * MySQL Singleton. Can connect to multiple MySQL tables at time.
+	 * MySQL Singleton. Can connect to multiple MySQL tables at will.
+	 * 
+	 * @category Singleton
+	 * @package Singleton\MySQL
+	 * @author John Mullanaphy
 	 */
 	final class MySQL {
 

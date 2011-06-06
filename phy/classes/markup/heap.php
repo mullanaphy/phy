@@ -6,7 +6,7 @@
 	 * Just a heap used for ranking element tag worth.
 	 *
 	 * @category Markup
-	 * @package Markup_Heap
+	 * @package Markup\Heap
 	 * @author John Mullanaphy
 	 * @final
 	 * @internal

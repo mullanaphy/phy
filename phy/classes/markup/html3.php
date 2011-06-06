@@ -6,7 +6,7 @@
 	 * Work with only HTML3.2 tags and attributes. Works well for email flyers.
 	 *
 	 * @category Markup
-	 * @package Markup_HTML3
+	 * @package Markup\HTML3
 	 * @author John Mullanaphy
 	 */
 	class HTML3 extends \PHY\Markup\_Abstract {

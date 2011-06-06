@@ -1,7 +1,14 @@
 <?php
 
 	namespace PHY\Extended;
-
+	
+	/**
+	 * Extended to add some simple debugging.
+	 *
+	 * @category Extended
+	 * @package Extended\MySQL
+	 * @author John Mullanaphy
+	 */
 	class MySQL extends \MySQLi {
 
 		private static $COUNT = 0,
@@ -11,7 +18,7 @@
 		$SERVERS = array();
 
 		/**
-		 * Extend this just so we can through out a 503 error if our DB is
+		 * Extend this just so we can throw out a 503 error if our DB is
 		 * acting flaky.
 		 *
 		 * @param string $host

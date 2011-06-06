@@ -5,8 +5,8 @@
 	/**
 	 * The default Page class. All Page classs should extend Page.
 	 *
-	 * @package Page
-	 * @category Page
+	 * @package View
+	 * @category View
 	 * @author John Mullanaphy
 	 * @abstract
 	 */

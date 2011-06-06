@@ -6,7 +6,7 @@
 	 * The actual Markup element object. This is where the magic happens.
 	 *
 	 * @category Markup
-	 * @package Markup_Element
+	 * @package Markup\Element
 	 * @author John Mullanaphy
 	 * @final
 	 * @internal

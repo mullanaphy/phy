@@ -11,7 +11,7 @@
 			# Define the BASE_PATH.
 			if(!defined('BASE_PATH')) define('BASE_PATH',dirname(dirname(__FILE__)).'/');
 			if(!defined('ROOT_PATH')) define('ROOT_PATH',$_SERVER['DOCUMENT_ROOT']);
-			
+
 			# Class handler file. This is what controls the folder system.
 			require_once BASE_PATH.'/phy/classes/_required.php';
 
@@ -19,8 +19,7 @@
 			require_once BASE_PATH.'/phy/constants/_required.php';
 
 			# Setting the XSRF cookie.
-#			\PHY\Debug::dump($_COOKIE);
-			if(!isset($_COOKIE['_xsrf_id'])) \PHY\Cookie::set('_xsrf_id',md5(\PHY\String::random(16)),time()+INT_YEAR);
+			if(!isset($_COOKIE['_xsrf_id'])) \PHY\Cookie::set('_xsrf_id',md5(\PHY\String::random(16)),time() + INT_YEAR);
 
 			# Headers. Also note, HTML\PHP pages will also call session_start.
 			new \PHY\Headers;

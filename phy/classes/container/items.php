@@ -2,6 +2,13 @@
 
 	namespace PHY\Container;
 
+	/**
+	 * Create an item list based container.
+	 *
+	 * @category Container
+	 * @package Container
+	 * @author John Mullanaphy
+	 */
 	class Items extends \PHY\Container\_Abstract {
 
 		protected $content = 'ul',

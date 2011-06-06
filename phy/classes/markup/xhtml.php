@@ -6,7 +6,7 @@
 	 * Work with only XHTML 1.0 Transition tags and attributes.
 	 *
 	 * @category Markup
-	 * @package Markup_XHTML
+	 * @package Markup\XHTML
 	 * @author John Mullanaphy
 	 */
 	class XHTML extends \PHY\Markup\_Abstract {

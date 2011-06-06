@@ -4,6 +4,10 @@
 
 	/**
 	 * Define your hosts inside phy/config.php
+	 * 
+	 * @category Singleton
+	 * @package @Singleton\Memcache
+	 * @author John Mullanaphy
 	 */
 	final class Memcache {
 

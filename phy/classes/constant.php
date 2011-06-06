@@ -2,16 +2,34 @@
 
 	namespace PHY;
 
+	/**
+	 * Retrieve array based constants since constants cannot be arrays.
+	 * 
+	 * @category Contant
+	 * @package Constant
+	 * @author John Mullanaphy
+	 * @final
+	 * @static
+	 */
 	final class Constant {
 
+		/**
+		 * Class cannot be constructed.
+		 */
 		private function __construct() {
 			
 		}
 
+		/**
+		 * Class cannot be cloned.
+		 */
 		private function __clone() {
 			
 		}
 
+		/**
+		 * Trigger an error on undefined calls.
+		 */
 		public function __call($method,$arguments) {
 			\PHY\Debug::error('Functions::'.$method.'() does not exist.',E_USER_WARNING);
 		}

@@ -2,6 +2,13 @@
 
 	namespace PHY\Container;
 
+	/**
+	 * Create a table container for tabular data only.
+	 *
+	 * @category Container
+	 * @package Container\Table
+	 * @author John Mullanaphy
+	 */
 	class Table extends \PHY\Container\_Abstract {
 
 		protected $content = 'table',

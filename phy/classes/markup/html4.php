@@ -6,7 +6,7 @@
 	 * Work with only HTML4 tags and attributes.
 	 *
 	 * @category Markup
-	 * @package Markup_HTML4
+	 * @package Markup\HTML4
 	 * @author John Mullanaphy
 	 */
 	class HTML4 extends \PHY\Markup\_Abstract {

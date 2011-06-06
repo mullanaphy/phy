@@ -6,7 +6,7 @@
 	 * Extended to add a cleaner namespace method.
 	 *
 	 * @category Extended
-	 * @package Extended_SimpleXMLElement
+	 * @package Extended\SimpleXMLElement
 	 * @author John Mullanaphy
 	 */
 	class SimpleXMLElement extends \SimpleXMLElement {

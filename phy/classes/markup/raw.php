@@ -6,7 +6,7 @@
 	 * Work with only whatever tags you want.
 	 *
 	 * @category Markup
-	 * @package Markup_Raw
+	 * @package Markup\Raw
 	 * @author John Mullanaphy
 	 */
 	class Raw extends \PHY\Markup\_Abstract {

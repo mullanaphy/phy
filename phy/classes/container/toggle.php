@@ -2,6 +2,13 @@
 
 	namespace PHY\Container;
 
+	/**
+	 * Create a togglable container between different inner content.
+	 *
+	 * @category Container
+	 * @package Container\Toggle
+	 * @author John Mullanaphy
+	 */
 	class Toggle extends \PHY\Container\_Abstract {
 
 		protected $content = 'div',
