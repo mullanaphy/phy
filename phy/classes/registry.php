@@ -109,8 +109,10 @@
 						break;
 					case 'array':
 						$resources[$key] = 'Array #'.count($array).' keys';
+						break;
 					case 'string':
 						$resources[$key] = 'String '.String::shorten($resource);
+						break;
 					default:
 						$resources[$key] = ucfirst($type).' '.$resource;
 				endswitch;
