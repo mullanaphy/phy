@@ -94,6 +94,8 @@
 		 */
 		static public function reset() {
 			self::$_registry = array();
+			self::$_configs = array();
+			self::$_theme = 'default';
 		}
 
 		/**
@@ -172,6 +174,12 @@
 			endif;
 		}
 
+		/**
+		 * Define the theme values we should use.
+		 * 
+		 * @param string $theme
+		 * @return string
+		 */
 		static public function theme($theme=NULL) {
 			if($theme !== NULL):
 				if(is_dir(ROOT_PATH.'/phy/config/'.$theme)) self::$_theme = $theme;
