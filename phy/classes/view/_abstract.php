@@ -85,7 +85,7 @@
 					exit;
 			endswitch;
 			$this->parameters['method'] = $_SERVER['REQUEST_METHOD'];
-			$this->tag = \PHY\Markup::tag();
+			$this->tag = \PHY\Markup::instance();
 		}
 
 		/**
