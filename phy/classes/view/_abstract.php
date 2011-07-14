@@ -41,11 +41,9 @@
 		public function __construct($delay=false) {
 			if(method_exists($this,'beforeParameters')) $this->beforeParameters();
 			$this->parameters();
-			if(method_exists($this,'afterParameters')) $this->afterParameters();
 			$this->Template = new \PHY\Template;
 			if(method_exists($this,'beforeParse')) $this->beforeParse();
 			$this->parse();
-			if(method_exists($this,'afterParse')) $this->afterParse();
 		}
 
 		/**
