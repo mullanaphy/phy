@@ -65,25 +65,7 @@
 		 * Parses input parameters into $this->parameters.
 		 */
 		final protected function parameters() {
-			switch($_SERVER['REQUEST_METHOD']):
-				case 'GET':
-				case 'HEAD':
-					$this->parameters = $_GET;
-					break;
-				case 'POST':
-					$this->parameters = array_merge($_GET,$_POST);
-					break;
-				case 'PUT':
-				case 'DELETE':
-					parse_str(file_get_contents('php://input'),$parameters);
-					$this->parameters = array_merge($_GET,$_POST,$parameters);
-					break;
-				default:
-					header('HTTP/1.1 501 Not Implemented');
-					header('Allow: DELETE, GET, HEAD, POST, PUT',true,501);
-					echo 'Unauthorized';
-					exit;
-			endswitch;
+			$this->parameters = \PHY\Request::toArray();
 			$this->parameters['method'] = $_SERVER['REQUEST_METHOD'];
 			$this->tag = \PHY\Markup::instance();
 		}
