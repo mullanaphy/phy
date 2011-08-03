@@ -15,8 +15,9 @@
 	 */
 	final class Request {
 
-		static private $method = NULL,
-		$parameters = array();
+		static private $_method = NULL,
+			$_methods = array('DELETE','GET','HEAD','POST','PUT'),
+			$_parameters = array();
 
 		/**
 		 * Class cannot be constructed.
@@ -39,7 +40,7 @@
 		 */
 		static public function count() {
 			if($key === NULL) self::init();
-			return count(self::$parameters);
+			return count(self::$_parameters);
 		}
 
 		/**
@@ -50,8 +51,8 @@
 		 */
 		static public function get($key=NULL,$default=NULL) {
 			if($key === NULL) self::init();
-			if(self::$method === NULL) self::init();
-			return array_key_exists($key,self::$parameters)?self::$parameters[$key]:$default;
+			if(self::$_method === NULL) self::init();
+			return array_key_exists($key,self::$_parameters)?self::$_parameters[$key]:$default;
 		}
 
 		/**
@@ -64,22 +65,22 @@
 			switch($_SERVER['REQUEST_METHOD']):
 				case 'GET':
 				case 'HEAD':
-					self::$parameters = $_GET;
+					self::$_parameters = $_GET;
 					break;
 				case 'POST':
-					self::$parameters = array_merge($_GET,$_POST);
+					self::$_parameters = array_merge($_GET,$_POST);
 					break;
 				case 'PUT':
 				case 'DELETE':
 					parse_str(file_get_contents('php://input'),$parameters);
-					self::$parameters = array_merge($_GET,$_POST,$parameters);
+					self::$_parameters = array_merge($_GET,$_POST,$parameters);
 					break;
 				default:
-					parse_str(file_get_contents('php://input'),$parameters);
-					self::$parameters = array_merge($_GET,$_POST,$parameters);
+					parse_str(file_get_contents('php://input'),$_parameters);
+					self::$_parameters = array_merge($_GET,$_POST,$parameters);
 					break;
 			endswitch;
-			self::$method = $_SERVER['REQUEST_METHOD'];
+			self::$_method = $_SERVER['REQUEST_METHOD'];
 		}
 
 		/**
@@ -88,8 +89,18 @@
 		 * @return type string|NULL
 		 */
 		static public function method() {
-			if(self::$method === NULL) self::init();
-			return self::$method;
+			if(self::$_method === NULL) self::init();
+			return self::$_method;
+		}
+
+		/**
+		 * Returns an array of allowed request method calls.
+		 *
+		 * @return array
+		 * @static
+		 */
+		static public function methods() {
+			return self::$_methods;
 		}
 
 		/**
@@ -98,8 +109,8 @@
 		 * @return array
 		 */
 		static public function toArray() {
-			if(self::$method === NULL) self::init();
-			return self::$parameters;
+			if(self::$_method === NULL) self::init();
+			return self::$_parameters;
 		}
 
 		/**
@@ -108,8 +119,8 @@
 		 * @return stdClass
 		 */
 		static public function toArray() {
-			if(self::$method === NULL) self::init();
-			return (object)self::$parameters;
+			if(self::$_method === NULL) self::init();
+			return (object)self::$_parameters;
 		}
 
 		/**
@@ -118,8 +129,8 @@
 		 * @return string JSON
 		 */
 		static public function toJSON() {
-			if(self::$method === NULL) self::init();
-			return json_encode(self::$parameters);
+			if(self::$_method === NULL) self::init();
+			return json_encode(self::$_parameters);
 		}
 
 	}

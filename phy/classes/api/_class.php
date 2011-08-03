@@ -21,8 +21,7 @@
 			'url' => '/rest.php',
 			'response' => 'This API has been uninitiated.'
 		);
-		private static $_credentials = NULL,
-		$_methods = array('DELETE','GET','HEAD','POST','PUT');
+		private static $_credentials = NULL;
 
 		/**
 		 * Runs a RESTful $method.
@@ -106,7 +105,7 @@
 		public function run($action=NULL,array $parameters=array()) {
 			if(!is_string($action)) return false;
 			$this->_action = $action;
-			$this->_method = isset($parameters['method']) && in_array(strtoupper($parameters['method']),self::$_methods)?strtoupper($parameters['method']):'GET';
+			$this->_method = isset($parameters['method']) && in_array(strtoupper($parameters['method']),Request::methods())?strtoupper($parameters['method']):'GET';
 			if(is_object($this->API)):
 				if(method_exists(get_class($this->API),'api')) $this->_response = $this->API->run($action,$parameters);
 				else $this->_response['response'] = 'Action `'.$action.'` was not found within Controller `'.$this->_controller.'`. #'.__LINE__;
@@ -188,16 +187,6 @@
 		static public function login(array $parameters=array()) {
 			self::token($parameters);
 			if(self::$_credentials['id']) Cookie::generate('token_id',self::$_credentials['token_id']);
-		}
-
-		/**
-		 * Returns an array of allowed API method calls.
-		 *
-		 * @return array
-		 * @static
-		 */
-		static public function methods() {
-			return self::$_methods;
 		}
 
 		/**

@@ -7,28 +7,16 @@
 
 	call_user_func(
 		function() {
-			switch($_SERVER['REQUEST_METHOD']):
-				case 'GET':
-				case 'HEAD':
-					$parameters = $_GET;
-					break;
-				case 'POST':
-					$parameters = array_merge($_GET,$_POST);
-					break;
-				case 'PUT':
-				case 'DELETE':
-					parse_str(file_get_contents('php://input'),$parameters);
-					$parameters = array_merge($_GET,$_POST,$parameters);
-					break;
-				default:
-					header('HTTP/1.1 501 Not Implemented');
-					header('Allow: '.join(', ',API::methods()),true,501);
-					echo 'Unauthorized';
-					exit;
-			endswitch;
-
-			$parameters['method'] = isset($parameters['method']) && in_array(strtoupper($parameters['method']),API::methods())?strtoupper($parameters['method']):$_SERVER['REQUEST_METHOD'];
-
+			if(!in_array($_SERVER['REQUEST_METHOD'],Request::methods())):
+				header('HTTP/1.1 501 Not Implemented');
+				header('Allow: '.join(', ',Request::methods()),true,501);
+				echo 'Unauthorized';
+				exit;
+			else:
+				$parameters = Request::toArray();
+				$parameters['method'] = isset($parameters['method']) && in_array(strtoupper($parameters['method']),Request::methods())?strtoupper($parameters['method']):$_SERVER['REQUEST_METHOD'];
+			endif;
+			
 			# We have user login\out.
 			if(!isset($parameters['user'],$parameters['password'])):
 				$xsrf_id = isset($parameters['xsrf_id'])?$parameters['xsrf_id']:false;
