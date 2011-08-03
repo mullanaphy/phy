@@ -34,6 +34,15 @@
 		}
 
 		/**
+		 * Allow shorter calls for parameters.
+		 * 
+		 * @return mixed|NULL
+		 */
+		static public function __callStatic($key,$parameters) {
+			return call_user_func_array(array('self','get'),$parameters);
+		}
+		
+		/**
 		 * Return the number of parameters defined.
 		 * 
 		 * @return int Count
@@ -108,7 +117,7 @@
 		 * 
 		 * @return array
 		 */
-		static public function toArray() {
+		static public function getArray() {
 			if(self::$_method === NULL) self::init();
 			return self::$_parameters;
 		}
@@ -118,7 +127,7 @@
 		 * 
 		 * @return stdClass
 		 */
-		static public function toArray() {
+		static public function getObject() {
 			if(self::$_method === NULL) self::init();
 			return (object)self::$_parameters;
 		}
@@ -128,7 +137,7 @@
 		 * 
 		 * @return string JSON
 		 */
-		static public function toJSON() {
+		static public function getJSON() {
 			if(self::$_method === NULL) self::init();
 			return json_encode(self::$_parameters);
 		}
