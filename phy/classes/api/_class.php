@@ -175,7 +175,7 @@
 		 * @return bool
 		 */
 		public function success(array $response=array()) {
-			if(isset($this) && get_class($this) === __CLASS__) $response = $this->_response;
+			if(isset($this) && get_class($this) === __CLASS__) $response = array('status' => $this->_response);
 			return isset($response['status']) && $response['status'] >= 200 && $response['status'] < 300;
 		}
 

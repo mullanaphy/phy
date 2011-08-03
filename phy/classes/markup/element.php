@@ -138,7 +138,7 @@
 		 * Returns whether this element has no innerHTML or not.
 		 * @return bool
 		 */
-		public function is_empty() {
+		public function isEmpty() {
 			if(count($this->content)) foreach($this->content as $content) if($content !== NULL) return false;
 			return true;
 		}
