@@ -117,7 +117,7 @@
 		 * 
 		 * @return array
 		 */
-		static public function getArray() {
+		static public function toArray() {
 			if(self::$_method === NULL) self::init();
 			return self::$_parameters;
 		}
@@ -127,7 +127,7 @@
 		 * 
 		 * @return stdClass
 		 */
-		static public function getObject() {
+		static public function toObject() {
 			if(self::$_method === NULL) self::init();
 			return (object)self::$_parameters;
 		}
@@ -137,7 +137,7 @@
 		 * 
 		 * @return string JSON
 		 */
-		static public function getJSON() {
+		static public function toJSON() {
 			if(self::$_method === NULL) self::init();
 			return json_encode(self::$_parameters);
 		}
