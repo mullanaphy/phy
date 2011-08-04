@@ -79,11 +79,6 @@
 				case 'POST':
 					self::$_parameters = array_merge($_GET,$_POST);
 					break;
-				case 'PUT':
-				case 'DELETE':
-					parse_str(file_get_contents('php://input'),$parameters);
-					self::$_parameters = array_merge($_GET,$_POST,$parameters);
-					break;
 				default:
 					parse_str(file_get_contents('php://input'),$_parameters);
 					self::$_parameters = array_merge($_GET,$_POST,$parameters);
