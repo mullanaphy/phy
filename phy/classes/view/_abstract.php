@@ -41,7 +41,7 @@
 		public function __construct($delay=false) {
 			if(method_exists($this,'beforeParameters')) $this->beforeParameters();
 			$this->parameters();
-			$this->Template = new \PHY\Template;
+			$this->Template = new Template;
 			if(method_exists($this,'beforeParse')) $this->beforeParse();
 			$this->parse();
 		}
@@ -65,9 +65,9 @@
 		 * Parses input parameters into $this->parameters.
 		 */
 		final protected function parameters() {
-			$this->parameters = \PHY\Request::toArray();
+			$this->parameters = Request::toArray();
 			$this->parameters['method'] = $_SERVER['REQUEST_METHOD'];
-			$this->tag = \PHY\Markup::instance();
+			$this->tag = Markup::instance();
 		}
 
 		/**
