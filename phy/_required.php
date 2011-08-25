@@ -68,5 +68,8 @@
 
 			# Start timing page generation
 			\PHY\Debug::timer(true);
+			
+			# Run Onload.
+			\PHY\Event::dispatch('load');
 		}
 	);

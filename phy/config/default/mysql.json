@@ -1,8 +1,0 @@
-{
-	"default":{
-		"host":"localhost",
-		"username":"username",
-		"password":"password",
-		"table":"table"
-	}
-}
