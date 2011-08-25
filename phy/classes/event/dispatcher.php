@@ -12,11 +12,11 @@
 
 		/**
 		 * Create a dispatcher item.
-		 * 
-		 * @param string $action Method to be called on dispatch.
+		 *
+		 * @param callable $action Method to be called on dispatch.
 		 * @param array $parameters Parameters to send along to the method.
 		 * @param bool $recurring Set true if you want this to be called for every trigger
-		 * @return Dispatcher 
+		 * @return Dispatcher
 		 */
 		public function __construct($action='',$parameters=NULL,$recurring=NULL) {
 			$this->action($action);
@@ -27,7 +27,7 @@
 
 		/**
 		 * Get a value for the current dispatcher.
-		 * 
+		 *
 		 * @param string $key
 		 * @return mixed
 		 */
@@ -38,8 +38,8 @@
 
 		/**
 		 * Set the dispatcher action.
-		 * 
-		 * @param string $action Method to be called on dispatch.
+		 *
+		 * @param callable $action Method to be called on dispatch.
 		 * @return Dispatcher
 		 */
 		public function action($action='') {
@@ -62,7 +62,7 @@
 
 		/**
 		 * Set recurring.
-		 * 
+		 *
 		 * @param bool $recurring Set true if you want this to be called for every trigger
 		 * @return Dispatcher
 		 */
