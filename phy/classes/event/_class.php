@@ -1,10 +1,11 @@
 <?php
 
 	namespace PHY;
-	
+
 	final class Event {
+
 		static private $_events = array();
-		
+
 		/**
 		 * Add an event to trigger list.
 		 * 
@@ -21,7 +22,7 @@
 			);
 			return true;
 		}
-		
+
 		/**
 		 * Get a list of events waiting to be triggered.
 		 * 
@@ -29,12 +30,12 @@
 		 * @return array 
 		 */
 		static public function events($event=NULL) {
-			if(is_string($event)&&array_key_exists($event,self::$_events))
+			if(is_string($event) && array_key_exists($event,self::$_events))
 				return self::$_events[$event];
 			else
 				return self::$_events;
 		}
-		
+
 		/**
 		 * Dispatch a trigger.
 		 * 
@@ -53,7 +54,8 @@
 						case 'object':
 							if($function['action'] instanceof \PHY\Dispatcher)
 								$function['action']->dispatch();
-								if(!$function['recurring']->isRecurring()) unset($function);
+							if(!$function['recurring']->isRecurring())
+								unset($function);
 							break;
 						case 'string':
 						default:
@@ -62,4 +64,5 @@
 				endforeach;
 			endif;
 		}
+
 	}
