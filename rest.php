@@ -16,7 +16,7 @@
 				$parameters = Request::toArray();
 				$parameters['method'] = isset($parameters['method']) && in_array(strtoupper($parameters['method']),Request::methods())?strtoupper($parameters['method']):$_SERVER['REQUEST_METHOD'];
 			endif;
-			
+
 			# We have user login\out.
 			if(!isset($parameters['user'],$parameters['password'])):
 				$xsrf_id = isset($parameters['xsrf_id'])?$parameters['xsrf_id']:false;
@@ -54,19 +54,23 @@
 			else:
 				$API = new API($parameters['controller'],$parameters);
 				$run = $API->run(isset($parameters['action'])?$parameters['action']:strtolower($parameters['method']),$parameters);
-				if(!$run) $run = array(
+				if(!$run)
+					$run = array(
 						'status' => 404,
 						'response' => 'Action was not found. #'.__LINE__
 					);
-				if($run['status'] >= 300 || $run['status'] < 200) new API\Error($parameters['controller'],isset($parameters['action'])?$parameters['action']:'get',$run,$parameters);
+				if($run['status'] >= 300 || $run['status'] < 200)
+					new API\Error($parameters['controller'],isset($parameters['action'])?$parameters['action']:'get',$run,$parameters);
 			endif;
 
 			# Redirect or display nothing on a 204.
 			if(isset($run['status']) && $run['status'] == 204):
 				if(!isset($parameters['_ajax'])):
 					Cookie::set('xsrf_id',md5(String::random(16)),INT_YEAR);
-					if(isset($run['url'])) header('Location: '.$run['url']);
-					else header('HTTP/1.1 204 '.Constant::STATUS_CODE(204));
+					if(isset($run['url']))
+						header('Location: '.$run['url']);
+					else
+						header('HTTP/1.1 204 '.Constant::STATUS_CODE(204));
 					exit;
 				endif;
 				header('HTTP/1.1 204 '.Constant::STATUS_CODE(204));
@@ -86,21 +90,24 @@
 				if(is_array($run['response']) && isset($run['response']['content']) && is_object($run['response']['content']) && preg_match('#Markup|Container#i',get_class($run['response']['content']))):
 					$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
 					$run['response']['content'] = (string)$run['response']['content'];
-					if(Template::files()) $run['response']['files'] = Template::files();
+					if(Template::files())
+						$run['response']['files'] = Template::files();
 					$run['response'] = json_encode($run['response']);
 				elseif(is_object($run['response']) && preg_match('#Markup|Container#i',get_class($run['response']))):
 					$run['response'] = array(
 						'console' => 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'],
 						'content' => (string)$run['response']
 					);
-					if(Template::files()) $run['response']['files'] = Template::files();
+					if(Template::files())
+						$run['response']['files'] = Template::files();
 					$run['response'] = json_encode($run['response']);
 				elseif(is_object($run['response']) && method_exists($run['response'],'__toString')):
 					$run['response'] = (string)$run['response'];
 				else:
 					if(is_array($run['response'])):
 						$run['response']['console'] = 'Generation: '.Debug::timer().'; Elements: '.Markup::elements().'; Server: '.$_SERVER['SERVER_ADDR'];
-						if(Template::files()) $run['response']['files'] = Template::files();
+						if(Template::files())
+							$run['response']['files'] = Template::files();
 					endif;
 					$run['response'] = json_encode($run['response']);
 				endif;
@@ -110,8 +117,10 @@
 				header('Content-type: text/html; charset=utf-8');
 				echo $run['response'];
 			elseif(isset($parameters['_form'])):
-				if($run['status'] >= 200 && $run['status'] < 300) Cookie::set('xsrf_id',md5(String::random(16)),INT_YEAR);
-				if(isset($run['url'])) header('Location: '.$run['url']);
+				if($run['status'] >= 200 && $run['status'] < 300)
+					Cookie::set('xsrf_id',md5(String::random(16)),INT_YEAR);
+				if(isset($run['url']))
+					header('Location: '.$run['url']);
 				exit;
 			elseif(isset($parameters['xsrf']) || isset($parameters['xsrf_id']) || isset($parameters['_caller'])):
 				header('HTTP/1.1 '.$run['status'].' '.Constant::STATUS_CODE($run['status']));
@@ -134,7 +143,8 @@
 				if(is_object($run['response']) && preg_match('#Markup|Container#i',get_class($run['response']))):
 					Template::append($run['response']);
 				elseif(is_array($run['response']) && isset($run['response']['content']) && is_object($run['response']['content']) && preg_match('#Markup|Container#i',get_class($run['response']['content']))):
-					if(isset($run['response']['files'])) Template::files($run['response']['files']);
+					if(isset($run['response']['files']))
+						Template::files($run['response']['files']);
 					Template::append($run['response']['content']);
 				else:
 					$Container = new Container;
@@ -153,7 +163,8 @@
 				echo $run['response'];
 			else:
 				header('Content-type: text/javascript; charset=utf-8');
-				if(isset($run['response']['content'])) $run['response']['content'] = (string)$run['response']['content'];
+				if(isset($run['response']['content']))
+					$run['response']['content'] = (string)$run['response']['content'];
 				$encode = json_encode($run['response']);
 				$return = '';
 				$indented = 0;
@@ -162,11 +173,13 @@
 					$_ = substr($encode,$i,1);
 					switch($_):
 						case '\\':
-							if($string) $_ = '';
+							if($string)
+								$_ = '';
 							break;
 						case '"':
 							if(!$string):
-								for($ident = 0; $ident < $indented; ++$ident) $_ = $_;
+								for($ident = 0; $ident < $indented; ++$ident)
+									$_ = $_;
 								$string = true;
 							else:
 								$string = false;
@@ -174,25 +187,32 @@
 							break;
 						case '{':
 						case '[':
-							if($string) break;
+							if($string)
+								break;
 							++$indented;
 							$_ .= "\n";
-							for($ident = 0; $ident < $indented; ++$ident) $_ .= "   ";
+							for($ident = 0; $ident < $indented; ++$ident)
+								$_ .= "   ";
 							break;
 						case '}':
 						case ']':
-							if($string) break;
+							if($string)
+								break;
 							--$indented;
-							for($ident = 0; $ident < $indented; ++$ident) $_ = "   ".$_;
+							for($ident = 0; $ident < $indented; ++$ident)
+								$_ = "   ".$_;
 							$_ = "\n".$_;
 							break;
 						case ',':
-							if($string) break;
+							if($string)
+								break;
 							$_ .= "\n";
-							for($ident = 0; $ident < $indented; ++$ident) $_ .= "   ";
+							for($ident = 0; $ident < $indented; ++$ident)
+								$_ .= "   ";
 							break;
 						case ':':
-							if($string) break;
+							if($string)
+								break;
 							$_ .= ' ';
 							break;
 					endswitch;
