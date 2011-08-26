@@ -4,10 +4,10 @@
 
 	/**
 	 * Plugin for Geolocations.
-	 * 
+	 *
 	 * @category Geoplugin
 	 * @package Geoplugin
-	 * @author Geoplugin\John Mullanaphy
+	 * @author Geoplugin
 	 */
 	class Geoplugin {
 
@@ -29,11 +29,12 @@
 
 		/**
 		 * Send the IP to discover Geolocation data for.
-		 * 
+		 *
 		 * @param string $ip Default is $_SERVER['REMOTE_ADDR']
 		 */
 		public function __construct($ip=NULL) {
-			if($ip === NULL) $ip = $_SERVER['REMOTE_ADDR'];
+			if($ip === NULL)
+				$ip = $_SERVER['REMOTE_ADDR'];
 			$host = str_replace('{IP}',$ip,$this->host);
 			$host = str_replace('{CURRENCY}',$this->currency,$host);
 			$row = unserialize($this->__fetch($host));
@@ -54,7 +55,7 @@
 
 		/**
 		 * Convert currency as needed be.
-		 * 
+		 *
 		 * @param float $amount
 		 * @param int $round
 		 * @param string $symbol
@@ -76,7 +77,7 @@
 
 		/**
 		 * Grab nearby information.
-		 * 
+		 *
 		 * @param float $radius
 		 * @param int $limit
 		 * @return mixed
@@ -87,7 +88,8 @@
 				return array(array());
 			endif;
 			$host = 'http://www.geoplugin.net/extras/nearby.gp?lat='.$this->latitude.'&long='.$this->longitude.'&radius='.$radius;
-			if(is_numeric($limit)) $host .= '&limit='.$limit;
+			if(is_numeric($limit))
+				$host .= '&limit='.$limit;
 			return unserialize($this->__fetch($host));
 		}
 
