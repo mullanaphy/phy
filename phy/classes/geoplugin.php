@@ -37,7 +37,7 @@
 				$ip = $_SERVER['REMOTE_ADDR'];
 			$host = str_replace('{IP}',$ip,$this->host);
 			$host = str_replace('{CURRENCY}',$this->currency,$host);
-			$row = unserialize($this->__fetch($host));
+			$row = unserialize($this->_fetch($host));
 			$this->ip = $ip;
 			$this->city = $row['geoplugin_city'];
 			$this->region = $row['geoplugin_region'];
@@ -97,7 +97,7 @@
 		 * @access private
 		 * @ignore
 		 */
-		private function __fetch($host=NULL) {
+		private function _fetch($host=NULL) {
 			if(function_exists('curl_init')):
 				$ch = curl_init();
 				curl_setopt($ch,CURLOPT_URL,$host);
