@@ -4,7 +4,7 @@
 
 	/**
 	 * Retrieve array based constants since constants cannot be arrays.
-	 * 
+	 *
 	 * @category Contant
 	 * @package Constant
 	 * @author John Mullanaphy
@@ -17,14 +17,14 @@
 		 * Class cannot be constructed.
 		 */
 		private function __construct() {
-			
+
 		}
 
 		/**
 		 * Class cannot be cloned.
 		 */
 		private function __clone() {
-			
+
 		}
 
 		/**
@@ -60,8 +60,10 @@
 			if($values):
 				$temp = $configs[$config];
 				foreach($values as $value):
-					if(!isset($temp[$value])) return;
-					elseif($temp) $temp = $temp[$value];
+					if(!isset($temp[$value]))
+						return;
+					elseif($temp)
+						$temp = $temp[$value];
 				endforeach;
 				return $temp;
 			else:
@@ -86,7 +88,6 @@
 		 */
 		static public function COUNTRIES() {
 			return array(
-				'US' => 'United States',
 				'AF' => 'Afghanistan',
 				'AL' => 'Albania',
 				'DZ' => 'Algeria',
@@ -322,7 +323,7 @@
 				'AE' => 'United Arab Emirates',
 				'UK' => 'United Kingdom',
 				'GB' => 'Great Britain',
-				'US_2' => 'United States',
+				'US' => 'United States',
 				'UM' => 'United States Minor Outlying Isl',
 				'UY' => 'Uruguay',
 				'UZ' => 'Uzbekistan',
@@ -681,8 +682,10 @@
 			509 => 'unused',
 			510 => 'Not Extended'
 			);
-			if(isset($array[$status_code])) return $array[$status_code];
-			elseif($status_code === NULL) return $array;
+			if(isset($array[$status_code]))
+				return $array[$status_code];
+			elseif($status_code === NULL)
+				return $array;
 		}
 
 	}
