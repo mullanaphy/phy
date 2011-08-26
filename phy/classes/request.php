@@ -3,12 +3,10 @@
 	namespace PHY;
 
 	/**
-	 * Registry for storing all important and\or global key => values.
-	 * 
-	 * Registry::get('config/*'); works slightly different then the rest.
-	 * 
-	 * @category Registry
-	 * @package Registry
+	 * Get REQUEST related data.
+	 *
+	 * @category Request
+	 * @package Request
 	 * @author John Mullanaphy
 	 * @final
 	 * @static
@@ -16,57 +14,50 @@
 	final class Request {
 
 		static private $_method = NULL,
-			$_methods = array('DELETE','GET','HEAD','POST','PUT'),
-			$_parameters = array();
+		$_methods = array('DELETE','GET','HEAD','POST','PUT'),
+		$_parameters = array();
 
 		/**
 		 * Class cannot be constructed.
 		 */
 		private function __construct() {
-			
+
 		}
 
 		/**
 		 * Class cannot be cloned.
 		 */
 		public function __clone() {
-			\PHY\Debug::error('Cannot clone the static class Registry.',E_USER_ERROR);
+			\PHY\Debug::error('Cannot clone the static class Request.',E_USER_ERROR);
 		}
 
 		/**
 		 * Allow shorter calls for parameters.
-		 * 
+		 *
 		 * @return mixed|NULL
 		 */
 		static public function __callStatic($key,$parameters) {
+			array_unshift($parameters,$key);
 			return call_user_func_array(array('self','get'),$parameters);
-		}
-		
-		/**
-		 * Return the number of parameters defined.
-		 * 
-		 * @return int Count
-		 */
-		static public function count() {
-			if($key === NULL) self::init();
-			return count(self::$_parameters);
 		}
 
 		/**
 		 * Return a value from the Registry if it exists.
-		 * 
+		 *
 		 * @param string $key
 		 * @return mixed|NULL
 		 */
 		static public function get($key=NULL,$default=NULL) {
-			if($key === NULL) self::init();
-			if(self::$_method === NULL) self::init();
+			if($key === NULL)
+				return;
+			elseif(self::$_method === NULL)
+				self::init();
 			return array_key_exists($key,self::$_parameters)?self::$_parameters[$key]:$default;
 		}
 
 		/**
 		 * Initiate\parse incoming parameters.
-		 * 
+		 *
 		 * @internal
 		 * @ignore
 		 */
@@ -89,11 +80,12 @@
 
 		/**
 		 * Return the current request method.
-		 * 
+		 *
 		 * @return type string|NULL
 		 */
 		static public function method() {
-			if(self::$_method === NULL) self::init();
+			if(self::$_method === NULL)
+				self::init();
 			return self::$_method;
 		}
 
@@ -109,31 +101,42 @@
 
 		/**
 		 * Return an array of all parameters.
-		 * 
+		 *
 		 * @return array
 		 */
 		static public function toArray() {
-			if(self::$_method === NULL) self::init();
+			if(self::$_method === NULL)
+				self::init();
 			return self::$_parameters;
 		}
 
 		/**
 		 * Return an object of all parameters.
-		 * 
+		 *
 		 * @return stdClass
 		 */
 		static public function toObject() {
-			if(self::$_method === NULL) self::init();
+			if(self::$_method === NULL)
+				self::init();
 			return (object)self::$_parameters;
 		}
 
 		/**
+		 * Return a string of all parameters.
+		 *
+		 */
+		static public function toString() {
+			return http_build_query(self::$_parameters);
+		}
+
+		/**
 		 * Return a JSON string of all parameters.
-		 * 
+		 *
 		 * @return string JSON
 		 */
 		static public function toJSON() {
-			if(self::$_method === NULL) self::init();
+			if(self::$_method === NULL)
+				self::init();
 			return json_encode(self::$_parameters);
 		}
 
