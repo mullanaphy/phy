@@ -98,7 +98,8 @@
 			);
 
 			# HTML Version to use.
-			switch(true):
+			$this->tag = \PHY\Markup::instance();
+/*			switch(true):
 				case (Headers::ie6()):
 					$this->tag = \PHY\Markup::instance('HTML4');
 					break;
@@ -111,8 +112,7 @@
 						'content' => 'user-scalable=no,width=device-width,minimum-scale=1.0,maximum-scale=1.0'
 					);
 				default:
-					$this->tag = \PHY\Markup::instance();
-			endswitch;
+			endswitch; */
 
 			$this->js['core'] = \PHY\Registry::get('config/files/js');
 			$this->css['core'] = \PHY\Registry::get('config/files/css');
