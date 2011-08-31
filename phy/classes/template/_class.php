@@ -44,7 +44,7 @@
 
 		/**
 		 * You can only initiate one Template object.
-		 * 
+		 *
 		 * Will call $this->init(); on initiation.
 		 */
 		public function __construct() {
@@ -100,10 +100,10 @@
 			# HTML Version to use.
 			switch(true):
 				case (Headers::ie6()):
-					$this->tag = new \PHY\Markup('HTML4');
+					$this->tag = \PHY\Markup::instance('HTML4');
 					break;
 				case (Headers::bot()):
-					$this->tag = new \PHY\Markup('HTML4');
+					$this->tag = \PHY\Markup::instance('HTML4');
 					break;
 				case (Headers::mobile()):
 					$this->meta[] = array(
@@ -111,7 +111,7 @@
 						'content' => 'user-scalable=no,width=device-width,minimum-scale=1.0,maximum-scale=1.0'
 					);
 				default:
-					$this->tag = new \PHY\Markup;
+					$this->tag = \PHY\Markup::instance();
 			endswitch;
 
 			$this->js['core'] = \PHY\Registry::get('config/files/js');
@@ -125,7 +125,7 @@
 		}
 
 		/**
-		 * Will call $this->generate(); on object destruction. 
+		 * Will call $this->generate(); on object destruction.
 		 */
 		public function __destruct() {
 			if(!$this->generated) $this->generate();
@@ -133,7 +133,7 @@
 
 		/**
 		 * returns all the content.
-		 * 
+		 *
 		 * @return string
 		 */
 		public function __toString() {
@@ -153,10 +153,10 @@
 
 		/**
 		 * Append content into the current Section/Column
-		 * 
+		 *
 		 * @param mixed $content
 		 * @param array $attributes
-		 * @return bool 
+		 * @return bool
 		 */
 		public function append($content=false,$attributes=NULL) {
 			if($content === false) return false;
@@ -175,10 +175,10 @@
 
 		/**
 		 * Start a new column.
-		 * 
+		 *
 		 * If you send an array of attributes, 'width' => '' will be appended to
 		 * style in the same way that sending just a decimal or integer would.
-		 * 
+		 *
 		 * @param int|float|array $attributes
 		 */
 		public function column($attributes=NULL) {
@@ -204,11 +204,11 @@
 
 		/**
 		 * Create a heading section.
-		 * 
+		 *
 		 * @param mixed $content
 		 * @param string $tag Type of container tag to use.
 		 * @param array $attributes
-		 * @return bool 
+		 * @return bool
 		 */
 		public function heading($content=NULL,$tag='h2',$attributes=NULL) {
 			if($content === NULL) return false;
@@ -229,10 +229,10 @@
 
 		/**
 		 * Prepend content into the current Section/Column
-		 * 
+		 *
 		 * @param mixed $content
 		 * @param array $attributes
-		 * @return bool 
+		 * @return bool
 		 */
 		public function prepend($content=false,$attributes=NULL) {
 			if($content === false) return false;
@@ -251,7 +251,7 @@
 
 		/**
 		 * Add javascript to be run on its own.
-		 * 
+		 *
 		 * @param type $content
 		 * @param type $attributes
 		 * @return array If no content is sent it returns back current scripts.
@@ -269,9 +269,9 @@
 
 		/**
 		 * Start a new section on our page.
-		 * 
+		 *
 		 * IF $attributes is a bool then $expand = $attributes.
-		 * 
+		 *
 		 * @param type $type Class name of our section.
 		 * @param array $attributes Attributes for the section or a bool.
 		 * @param bool $expand If the section should expand the whole viewport.
@@ -296,10 +296,10 @@
 
 		/**
 		 * Set|Get CSS.
-		 * 
+		 *
 		 * If no parameters are set then this method will return all current
 		 * CSS files that have been set.
-		 * 
+		 *
 		 * @param string,... $css
 		 * @return mixed
 		 */
@@ -323,10 +323,10 @@
 
 		/**
 		 * Set|Get meta description.
-		 * 
+		 *
 		 * If called without a parameter then this will return the currently set
 		 * meta description.
-		 * 
+		 *
 		 * @param string $description
 		 * @return mixed
 		 */
@@ -337,10 +337,10 @@
 
 		/**
 		 * Set|Get CSS and JS files.
-		 * 
+		 *
 		 * If no parameters are set then this method will return all current
 		 * files that have been set (CSS and JS).
-		 * 
+		 *
 		 * @param string,... $file
 		 * @return mixed
 		 */
@@ -364,15 +364,15 @@
 
 		/**
 		 * Turn options off.
-		 * 
+		 *
 		 * Can hide:
 		 * 	'title'
 		 * 	'footer'
 		 * 	'header'
 		 * 	'theme'
-		 * 
+		 *
 		 * If no parameters are set then it will return currently hidden.
-		 * 
+		 *
 		 * @param $hide,... Option to hide.
 		 * @return mixed
 		 */
@@ -387,10 +387,10 @@
 
 		/**
 		 * Set|Get JS.
-		 * 
+		 *
 		 * If no parameters are set then this method will return all current
 		 * JS files that have been set.
-		 * 
+		 *
 		 * @param string,... $js
 		 * @return mixed
 		 */
@@ -406,10 +406,10 @@
 
 		/**
 		 * Set|Get meta keywords.
-		 * 
+		 *
 		 * If called without a parameter then this will return the currently set
 		 * meta keyword.
-		 * 
+		 *
 		 * @param string,... $keyword
 		 * @return mixed
 		 */
@@ -420,10 +420,10 @@
 
 		/**
 		 * Set|Get a meta tag.
-		 * 
+		 *
 		 * If called without a parameter then this will return the currently set
 		 * meta tags.
-		 * 
+		 *
 		 * @param array $attributes Attributes of the new meta tag.
 		 * @return mixed
 		 */
@@ -434,10 +434,10 @@
 
 		/**
 		 * Set|Get RSS.
-		 * 
+		 *
 		 * If no parameters are set then this method will return all current
 		 * RSS files that have been set.
-		 * 
+		 *
 		 * @param string,... $rss
 		 * @return mixed
 		 */
@@ -452,15 +452,15 @@
 
 		/**
 		 * Turn options off.
-		 * 
+		 *
 		 * Can show:
 		 * 	'title'
 		 * 	'footer'
 		 * 	'header'
 		 * 	'theme'
-		 * 
+		 *
 		 * If no parameters are set then it will return currently shown.
-		 * 
+		 *
 		 * @param $show,... Option to show.
 		 * @return mixed
 		 */
@@ -475,10 +475,10 @@
 
 		/**
 		 * Set|Get meta title.
-		 * 
+		 *
 		 * If called without a parameter then this will return the currently set
 		 * meta title.
-		 * 
+		 *
 		 * @param string $title
 		 * @return mixed
 		 */
@@ -489,7 +489,7 @@
 
 		/**
 		 * Append a template source.
-		 * 
+		 *
 		 * @param string $source
 		 * @param bool $return If true it will return Markup instead of appending it.
 		 * @return string|Markup_Abstract
@@ -521,7 +521,7 @@
 
 		/**
 		 * Return a Markup object containing all of our body content.
-		 * 
+		 *
 		 * @return Markup_Abstract
 		 */
 		protected function body() {
@@ -628,7 +628,7 @@
 		/**
 		 * Internal function for generating all the files and merging if we are
 		 * on a production server.
-		 * 
+		 *
 		 * @access private
 		 * @internal
 		 * @return mixed
@@ -935,7 +935,7 @@
 
 		/**
 		 * Generate and return the HEAD tag of our Page.
-		 * 
+		 *
 		 * @return Markup_Abstract
 		 */
 		public function head() {
@@ -992,7 +992,7 @@
 
 		/**
 		 * Generate and return the FOOTER tag of our Page.
-		 * 
+		 *
 		 * @return Markup_Abstract
 		 */
 		public function footer() {
@@ -1008,7 +1008,7 @@
 
 		/**
 		 * Generate the HEADER section of our BODY section.
-		 * 
+		 *
 		 * @return string|Markup_Abstract
 		 */
 		public function header() {
@@ -1024,10 +1024,10 @@
 
 		/**
 		 * Internal cleaner for attributes.
-		 * 
+		 *
 		 * If you send just a string then it will be set as the class
 		 * If you send a string with a : then it will set key:value.
-		 * 
+		 *
 		 * @param mixed $attributes
 		 * @internal
 		 * @return mixed
@@ -1044,9 +1044,9 @@
 
 		/**
 		 * Check our Markup heap for important tags. Return them if they exist.
-		 * 
+		 *
 		 * @param type $limit
-		 * @return type 
+		 * @return type
 		 */
 		private function _extract($limit=15) {
 			if(\PHY\Markup::elements() > 20 && \PHY\Markup::important()):
@@ -1065,7 +1065,7 @@
 		/**
 		 * Attempt to grab relevant meta tags on page generation. We use this if
 		 * meta details weren't set.
-		 * 
+		 *
 		 * @return string
 		 */
 		private function _meta() {
