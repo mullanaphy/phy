@@ -1,0 +1,39 @@
+<?php
+    /**
+     * PHY
+     *
+     * LICENSE
+     *
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@kinopio.net so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY
+     * @copyright Copyright (c) 2011 KinopioNet (http://www.kinopio.net/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy
+     * 
+     * @var $this \PHY\View\Block
+     * @var $name string
+     * @var $email email
+     */
+?>
+<?=$this->child('error')?>
+<div class="register">
+    <h1>Register<a class="login-button" href="<?=$this->url('login')?>">Login</a></h1>
+    <form action="<?=$this->url('register')?>" method="post">
+        <fieldset class="register-contact text">
+            <input class="inp-text large" id="register-name" maxlength="16" name="name" placeholder="Full Name" required="required" type="text" value="<?=$this->clean($name)?>" /></dd>
+            <input class="inp-text large" id="register-email" maxlength="255" name="email" placeholder="Email Address" required="required" type="email"  value="<?=$this->clean($email)?>" /></dd>
+            <input class="inp-text large" id="register-password" name="password" placeholder="Password" required="required" type="password" /></dd>
+        </fieldset>
+        <fieldset class="register-submit">
+            <button><span><span>Register</span></span></button>
+        </fieldset>
+    </form>
+</div>

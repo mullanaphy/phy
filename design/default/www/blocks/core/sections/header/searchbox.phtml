@@ -1,0 +1,8 @@
+<div class="header-searchbox right">
+    <form action="<?=$this->url('search')?>" method="post">
+        <fieldset class="input">
+            <input name="q" type="text" value="<?=$this->clean($search)?>" />
+        </fieldset>
+        <fieldset class="submit"><input type="submit" value="Search" /></fieldset>
+    </form>
+</div>

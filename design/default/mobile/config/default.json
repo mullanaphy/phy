@@ -1,0 +1,22 @@
+{
+	"layout":{
+		"template":"core/mobile.phtml",
+		"children":{
+			"head":{
+				"template":"core/sections/head.phtml"
+			},
+			"header":{
+				"template":"core/sections/header.phtml"
+			},
+			"footer":{
+				"template":"core/sections/footer.phtml"
+			},
+			"menu": {
+				"template":"core/sections/menu.phtml"    
+			},
+			"content":{
+				"viewClass":"parser"
+			}
+		}
+	}
+}

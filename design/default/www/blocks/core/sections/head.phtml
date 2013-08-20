@@ -1,0 +1,44 @@
+<?php
+    /**
+     * PHY
+     *
+     * LICENSE
+     *
+     * This source file is subject to the Open Software License (OSL 3.0)
+     * that is bundled with this package in the file LICENSE.txt.
+     * It is also available through the world-wide-web at this URL:
+     * http://opensource.org/licenses/osl-3.0.php
+     * If you did not receive a copy of the license and are unable to
+     * obtain it through the world-wide-web, please send an email
+     * to license@kinopio.net so we can send you a copy immediately.
+     *
+     * @package PHY
+     * @category PHY
+     * @copyright Copyright (c) 2011 KinopioNet (http://www.kinopio.net/)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @author John Mullanaphy
+     *
+     * @var $this \PHY\View\Block
+     * @var $js array
+     * @var $css array
+     * @var $xsrf_id string
+     * @var $title string
+     * @see \PHY\View\Head
+     */
+?>
+<?php $tag = $this->tag()?>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title><?=$title?></title>
+<script type="text/javascript">if(window.location.hash.toString().match('!')){var url=window.location.hash.toString().split('!');window.location=url[1];}</script>
+<meta name="viewport" content="user-scalable=no, width=device-width" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<?php
+    foreach ($js as $file):
+        echo $tag->script->attributes($file);
+    endforeach
+?>
+<script type="text/javascript">(function($){$.user={xsrf_id:'<?=$xsrf_id?>'};})(jQuery);</script>
+<?php
+    foreach ($css as $file):
+        echo $tag->link($file);
+    endforeach?>
