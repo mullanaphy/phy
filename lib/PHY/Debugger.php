@@ -61,7 +61,7 @@
             $size = (int)$size;
             if (!$size) {
                 return 0;
-            } elseif ($size < 0) {
+            } else if ($size < 0) {
                 $sign = -1;
             } else {
                 $sign = 1;

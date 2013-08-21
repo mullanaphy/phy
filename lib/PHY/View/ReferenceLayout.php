@@ -36,9 +36,11 @@
         protected $variables = [];
         protected $rendered = false;
 
-        public function __call($method, $parameters)
+        public function __construct()
         {
-            return call_user_func_array([$this->getController(), $method], $parameters);
+            if (func_num_args()) {
+                call_user_func_array([$this, 'addConfig'], func_get_args());
+            }
         }
 
         public function addVariables($block = '', array $variables = [])
@@ -89,7 +91,7 @@
             foreach ($values as $value) {
                 if (!isset($temp[$value])) {
                     return;
-                } elseif ($temp) {
+                } else if ($temp) {
                     $temp = $temp[$value];
                 }
             }
@@ -162,7 +164,7 @@
 
         public function setController(\PHY\Controller $Controller)
         {
-            $this->setResource('controller', $Controller);
+            $this->controller = $controller;
             return $this;
         }
 

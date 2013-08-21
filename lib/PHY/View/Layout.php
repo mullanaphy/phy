@@ -63,11 +63,6 @@
             }
         }
 
-        public function getBlock()
-        {
-            
-        }
-
         /**
          * Set our controller.
          *
@@ -99,20 +94,12 @@
 
         public function toHtml()
         {
-            return (string)$this->child('layout');
+            return (string)$this->block('layout');
         }
 
         public function render()
         {
-            $this->rendered = true;
-            echo $this->toHtml();
-        }
-
-        public function __destruct()
-        {
-            if (!$this->rendered) {
-                $this->render();
-            }
+            return $this->toHtml();
         }
 
     }

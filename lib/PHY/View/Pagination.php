@@ -79,7 +79,7 @@
                                     $parameters['page_id'] = $i;
                                     return $_url.'?'.http_build_query($parameters);
                                 };
-                        } elseif (strpos('[%i]', $url) !== false) {
+                        } else if (strpos('[%i]', $url) !== false) {
                             $_url = $url;
                             $url = function($i) use($_url) {
                                     return str_replace('[%i]', $i, $_url);

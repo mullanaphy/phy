@@ -55,7 +55,7 @@
                         $this->settings[$k] = $v;
                     }
                 }
-            } elseif (is_string($key) & array_key_exists($key, $this->settings)) {
+            } else if (is_string($key) & array_key_exists($key, $this->settings)) {
                 $this->settings[$key] = $value;
             } else {
                 throw new Exception('Key `'.$key.'` does not exist in Cron\Task.');

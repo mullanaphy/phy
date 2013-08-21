@@ -275,8 +275,8 @@
         {
             $this->parsed = true;
             $response = $this->getResponse();
-            $response->addContent($this->getLayout());
-            $this->getResponse()->render();
+            $response->addContent($this->getLayout()->render());
+            $response->render();
         }
 
         public function buildBlocks()

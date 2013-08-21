@@ -136,9 +136,9 @@
         {
             if ($key === 'password') {
                 return;
-            } elseif (array_key_exists($key, $this->data)) {
+            } else if (array_key_exists($key, $this->data)) {
                 return $this->data[$key];
-            } elseif (array_key_exists($key, $this->_additional)) {
+            } else if (array_key_exists($key, $this->_additional)) {
                 return $this->_additional[$key];
             } else {
                 $attributes = $this->getAttributes();

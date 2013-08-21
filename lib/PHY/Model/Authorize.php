@@ -67,46 +67,37 @@
                 /* If it's root it has full access */
                 if ($User->group === 'root') {
                     $allowed = true;
-                }
-
-                /* See if a User's ID is in the approved list and not in the denied list. */ elseif (in_array($User->id, $allow) && !in_array($User->id, $deny)) {
+                } else if (in_array($User->id, $allow) && !in_array($User->id, $deny)) {
+                    /* See if a User's ID is in the approved list and not in the denied list. */
                     $allowed = true;
-                }
-
-                /* If not, see if he's in the denied list only. */ elseif (in_array($User->id, $deny)) {
+                } else if (in_array($User->id, $deny)) {
+                    /* If not, see if he's in the denied list only. */
                     $allowed = false;
-                }
-
-                /* If not, let's see if his group is in the allowed list and it's not in the denied list. */ elseif (in_array($User->group, $allow) && !in_array($User->group, $deny)) {
+                } else if (in_array($User->group, $allow) && !in_array($User->group, $deny)) {
+                    /* If not, let's see if his group is in the allowed list and it's not in the denied list. */
                     $allowed = true;
-                }
-
-                /* If not, let's see if his group is in the denied list. */ elseif (in_array($User->group, $deny)) {
+                } else if (in_array($User->group, $deny)) {
+                    /* If not, let's see if his group is in the denied list. */
                     $allowed = false;
-                }
-
-                /* If not, well let's see if everyone is allowed access and not in the denied list. */ elseif (in_array('all', $allow) && !in_array('all', $deny)) {
+                } else if (in_array('all', $allow) && !in_array('all', $deny)) {
+                    /* If not, well let's see if everyone is allowed access and not in the denied list. */
                     $allowed = true;
-                }
-
-                /* If not, we can see if everyone is denied. */ elseif (in_array('all', $deny)) {
+                } else if (in_array('all', $deny)) {
+                    /* If not, we can see if everyone is denied. */
                     $allowed = false;
-                }
-
-                /* Finally, if there isn't an explicit DENY all then they should have access. */ else {
+                } else {
+                    /* Finally, if there isn't an explicit DENY all then they should have access. */
                     $allowed = true;
                 }
             } else {
-                /* There's no logged in user, let's see if everyone is allowed access and not in the denied list. */
                 if (in_array('all', $allow) && !in_array('all', $deny)) {
+                    /* There's no logged in user, let's see if everyone is allowed access and not in the denied list. */
                     $allowed = true;
-                }
-
-                /* If not, we can see if everyone is denied. */ elseif (in_array('all', $deny)) {
+                } else if (in_array('all', $deny)) {
+                    /* If not, we can see if everyone is denied. */
                     $allowed = false;
-                }
-
-                /* Finally, if there isn't an explicit DENY all then they should have access. */ else {
+                } else {
+                    /* Finally, if there isn't an explicit DENY all then they should have access. */
                     $allowed = true;
                 }
             }

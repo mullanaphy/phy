@@ -15,12 +15,12 @@
      *
      */
 
-    namespace PHY\Registry;
+    namespace PHY\App;
 
     /**
-     * For registry related exceptions.
+     * For any app related exceptions.
      *
-     * @package PHY\Registry\Exception
+     * @package PHY\App\Exception
      * @category PHY
      * @copyright Copyright (c) 2011 KinopioNet (http://www.kinopio.net/)
      * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)

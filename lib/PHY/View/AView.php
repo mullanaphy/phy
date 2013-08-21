@@ -20,49 +20,38 @@
     /**
      * Abstract view class. Defines generic methods for various types of views.
      *
-     * @package PHY\View\_Abstract
+     * @package PHY\View\AView
      * @category PHY
      * @copyright Copyright (c) 2011 KinopioNet (http://www.kinopio.net/)
-     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+     * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)2
      * @author John Mullanaphy
      */
-    abstract class AView
+    abstract class AView implements \PHY\View\IView
     {
 
         use \PHY\TResources;
 
-        protected $name = '',
-            $theme = 'default',
-            $medium = 'www',
-            $variables = [];
-
-        /**
-         * Method for templates and HTML output.
-         */
-        abstract public function toHtml();
+        protected $app = null;
+        protected $name = '';
+        protected $theme = 'default';
+        protected $config = [];
 
         /**
          * 
          * @param \PHY\Markup\AMarkup $tag
          * @return \PHY\View\AView
          */
-        public function setMarkupBuilder(\PHY\Markup\AMarkup $markup)
+        public function setMarkup(\PHY\Markup\AMarkup $markup)
         {
-            \PHY\Event::dispatch('view/tag/before', [
+            \PHY\Event::dispatch('view/markup/before', [
                 'object' => $this,
                 'markup' => $markup
             ]);
-            if (method_exists($this, 'beforeMarkupBuilder')) {
-                $this->beforeMarkupBuilder();
-            }
-            $this->setResource('_markup_builder', $tag);
-            \PHY\Event::dispatch('view/tag/after', [
+            $this->setResource('_markup', $tag);
+            \PHY\Event::dispatch('view/markup/after', [
                 'object' => $this,
                 'tag' => $markup
             ]);
-            if (method_exists($this, 'afterMarkupBuilder')) {
-                $this->afterMarkupBuilder();
-            }
             return $this;
         }
 
@@ -71,12 +60,12 @@
          * 
          * @return \PHY\Markup\AMarkup
          */
-        public function getMarkupBuilder()
+        public function getMarkup()
         {
-            if (!$this->hasResource('_markup_builder')) {
+            if (!$this->hasResource('_markup')) {
                 $this->setMarkupBuilder(new \PHY\Markup\HTML5);
             }
-            return $this->getResource('_markup_builder');
+            return $this->getResource('_markup');
         }
 
         /**
@@ -92,38 +81,32 @@
         /**
          * Dumps layout class into this object.
          *
+         * @param \PHY\View\ILayout
          * @return \PHY\View
          */
-        public function setLayout(\PHY\View\Layout $layout)
+        public function setLayout(\PHY\View\ILayout $layout)
         {
             \PHY\Event::dispatch('view/layout/before', [
                 'object' => $this,
                 'layout' => $layout
             ]);
-            if (method_exists($this, 'beforeLayout')) {
-                $this->beforeLayout();
-            }
             $this->setResource('layout', $layout);
             \PHY\Event::dispatch('view/layout/after', [
                 'object' => $this,
                 'layout' => $layout
             ]);
-            if (method_exists($this, 'afterLayout')) {
-                $this->afterLayout();
-            }
             return $this;
         }
 
         /**
          * Get the Layout class.
          *
-         * @return \PHY\View\Layout
+         * @return \PHY\View\ILayout
          */
         public function getLayout()
         {
             if (!$this->hasResource('layout')) {
-                $layout = new \PHY\Layout;
-                $this->setResource('layout', $layout);
+                throw new Exception('Missing a \PHY\View\Layout layout class.');
             }
             return $this->getResource('layout');
         }
@@ -157,7 +140,7 @@
         public function getRequest()
         {
             if (!$this->hasResource('_request')) {
-                $this->setRequest(\PHY\Request::createFromGlobal());
+                throw new Exception('Missing a \PHY\Request request class.');
             }
             return $this->getResource('_request');
         }
@@ -218,44 +201,33 @@
             return $this->theme;
         }
 
-        public function setMedium($medium = '')
+        public function setConfig(array $config = [])
         {
-            $this->medium = $medium;
+            $this->config = array_replace($this->config, $config);
             return $this;
         }
 
-        public function getMedium()
+        public function getConfig()
         {
-            return $this->medium;
-        }
-
-        public function setVariables(array $variables = [])
-        {
-            $this->variables = array_replace($this->variables, $variables);
-            return $this;
-        }
-
-        public function getVariables()
-        {
-            return $this->variables;
+            return $this->config;
         }
 
         public function setVariable($key = '', $value = '')
         {
-            $this->variables[$key] = $value;
+            $this->config[$key] = $value;
             return $this;
         }
 
         public function getVariable($key = '')
         {
-            return array_key_exists($key, $this->variables)
-                ? $this->variables[$key]
+            return array_key_exists($key, $this->config)
+                ? $this->config[$key]
                 : null;
         }
 
         public function hasVariable($key = '')
         {
-            return array_key_exists($key, $this->variables);
+            return array_key_exists($key, $this->config);
         }
 
         public function setTemplate($template = '')
@@ -264,7 +236,27 @@
             return $this;
         }
 
-        public function setPath(\PHY\path $path)
+        public function setApp(\PHY\App $app)
+        {
+            $this->app = $app;
+            return $this;
+        }
+
+        public function getApp()
+        {
+            if ($this->app === null) {
+                throw new Exception('Missing a \PHY\View\Layout layout class.');
+            }
+            return $this->app;
+        }
+
+        /**
+         * Set our path to use.
+         *
+         * @param \PHY\Path $path
+         * @return \PHY\View\AView
+         */
+        public function setPath(\PHY\Path $path)
         {
             $this->setResource('_path', $path);
             return $this;

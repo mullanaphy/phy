@@ -88,12 +88,10 @@
 
         public function match($expr, $num)
         {
-            // handle ALL match
             if ($expr === '*') {
                 return true;
             }
 
-            // handle multiple options
             if (strpos($expr, ',') !== false) {
                 foreach (explode(',', $expr) as $e) {
                     if ($this->match($e, $num)) {
@@ -117,24 +115,17 @@
                 $mod = 1;
             }
 
-            // handle all match by modulus
             if ($expr === '*') {
                 $from = 0;
                 $to = 60;
-            }
-
-            // handle range
-            elseif (strpos($expr, '-') !== false) {
+            } else if (strpos($expr, '-') !== false) {
                 $e = explode('-', $expr);
                 if (sizeof($e) !== 2) {
                     throw new Exception('Invalid cron expression, expecting "from-to" structure: '.$expr.'.');
                 }
                 $from = $this->getNumeric($e[0]);
                 $to = $this->getNumeric($e[1]);
-            }
-
-            // handle regular token
-            else {
+            } else {
                 $from = $this->getNumeric($expr);
                 $to = $from;
             }

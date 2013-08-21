@@ -71,7 +71,7 @@
 
                             if (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
                                 $source = ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source);
-                            } elseif (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
+                            } else if (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
                                 $source = ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source);
                             } else {
                                 continue;
@@ -90,7 +90,7 @@
                             }
                             if (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
                                 $source = ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source);
-                            } elseif (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
+                            } else if (is_file(ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source))) {
                                 $source = ROOT_PATH.'resources'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $source);
                             } else {
                                 continue;

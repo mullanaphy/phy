@@ -29,13 +29,13 @@
     class Block extends \PHY\View\AView
     {
 
+        protected $name = '';
         protected $children = [];
 
         public function __construct($name = '', array $variables = [])
         {
             $this->setName($name);
             $this->setVariables($variables);
-            $this->tag();
         }
 
         public function __call($method, $parameters)
@@ -53,28 +53,19 @@
             }
         }
 
+        public function setVariables(array $variables) {
+            $this->variables = $variables;
+            if(array_key_exists('children', $variables)) {
+                foreach($variables['children'] as $child => $config) {
+                    $this->setChild($child, $config);
+                }
+            }
+        }
+
         public function setChild($child, $config)
         {
-            if ($this->hasVariable('children')) {
-                $children = $this->getVariable('children');
-                $children[$child] = $config;
-                $this->setVariable('children', $children);
-            } else {
-                $this->setVariable('children', [
-                    $child => $config
-                ]);
-            }
+            $this->children[$child] = new \PHY\View\Block($child, $config);
             return $this;
-        }
-
-        public function setChildren($children)
-        {
-            $this->setVariable('children', $children);
-        }
-
-        public function getChildren()
-        {
-            return $this->hasVariable('children')?$this->getVariable('children'):[];
         }
 
         public function toHtml()
@@ -129,14 +120,6 @@
         public function getName()
         {
             return $this->name;
-        }
-
-        public function child($child)
-        {
-            $children = $this->getChildren();
-            if (array_key_exists($child, $children)) {
-                return $this->getLayout()->block($child, $children[$child]);
-            }
         }
 
     }

@@ -14,8 +14,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "phy/markup": "1.0",
-        "phy/variable": "1.0"
+        "phy/markup": "1.0.0",
+        "phy/variable": "1.0.0"
     },
     "autoload": {
         "psr-0": {

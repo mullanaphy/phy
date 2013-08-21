@@ -40,7 +40,7 @@
                 $resource = $this->_getKey(substr($method, 3));
                 $action = $check.'Resource';
                 return $this->$action($resource);
-            } elseif ($check === 'uns' && strtolower(substr($method, 0, 5)) === 'unset') {
+            } else if ($check === 'uns' && strtolower(substr($method, 0, 5)) === 'unset') {
                 return $this->unsetResource($this->getKey(substr($method, 5)));
             }
         }

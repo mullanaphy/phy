@@ -277,7 +277,7 @@
             $SQL = parent::query($sql);
             if ($this->error) {
                 throw new Exception($this->error, $sql);
-            } elseif ($SQL->num_rows > 1) {
+            } else if ($SQL->num_rows > 1) {
                 throw new Exception('Your SQL returned '.$SQL->num_rows.' rows. Use select() and fetch_assoc() instead.', $sql);
             }
             $result = $SQL->fetch_assoc();

@@ -29,15 +29,35 @@
     interface IController
     {
 
-        public function action($method = 'index');
+        /**
+         * Set our global app state.
+         *
+         * @param \PHY\App
+         * @return \PHY\Controller\IController
+         */
+        public function setApp(\PHY\App $app);
 
-        public function getRequest();
+        /**
+         * Grab our global app state.
+         *
+         * @return \PHY\App
+         */
+        public function getApp();
+
+        /**
+         * Method to call.
+         *
+         * @param string $method
+         */
+        public function action($method = 'index');
 
         public function setRequest(\PHY\Request $Request);
 
-        public function getLayout();
+        public function getRequest();
 
         public function setLayout(\PHY\View\Layout $Layout);
+
+        public function getLayout();
 
         public function index_get();
 

@@ -366,9 +366,7 @@
                 $controller->setApp($this);
                 $controller->setRequest($request);
 
-                $layout = new \PHY\View\Layout;
-                $layout->addBlocks('default', $controller.'/'.$method);
-                $controller->setLayout($layout);
+                $controller->setLayout(new \PHY\View\Layout('default', $controller.'/'.$method));
 
                 $controller->action($method);
                 $response = $controller->render();

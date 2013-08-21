@@ -72,7 +72,7 @@
         {
             if (!$expires) {
                 return $this;
-            } elseif (is_numeric($expires)) {
+            } else if (is_numeric($expires)) {
                 $this->expires = $this->created + $expires;
             } else {
                 $this->expires = strtotime($expires, $this->created);
