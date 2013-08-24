@@ -1,6 +1,3 @@
-TODO
+Check out Phyneapple instead.
 
-+ Decouple classes and incorporate dependency injections.
-+ Replace linked Debug::error messages to more generic throw new Exceptions. This way classes are more mobile.
-+ Continue to remove hard coded Singletons with dependency or setter injections while using the Registry for default values.
-+ Add the JavaScript back into this project. Either jQuery or my personal 'in development' framework.
+https://github.com/mullanaphy/phyneapple
