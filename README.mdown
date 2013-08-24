@@ -2,6 +2,15 @@ PHY\PHY - an experimental framework for PHP 5.4+
 ================================================================================
 
 
+DEPRECATED
+
+Yeah, I'm no longer going to work on this. Really never, ever again. You can
+find the new fun time at:
+[Phyneapple!](https://github.com/mullanaphy/phyneapple)
+
+So please check out that project. Still a lot of work needs to be done (mostly
+getting models up and running).
+
 PHY\PHY is a smaller framework I built for side projects to use as an
 alternative to [Symfony2](https://www.symfony2.org/). It doesn't compete with
 Symfony2 or any other framework for the most part since it doesn't even have
